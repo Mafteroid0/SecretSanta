@@ -28,8 +28,16 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-validation-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    testImplementation 'org.springframework.security:spring-security-test'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.flywaydb:flyway-database-postgresql'
+    implementation 'org.springframework.boot:spring-boot-starter-flyway'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+tasks.named('bootRun') {
+    sourceResources sourceSets.main
 }

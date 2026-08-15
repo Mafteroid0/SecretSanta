@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/secret_santa
+    username: secret_santa_user
+    password: secret
+
+  flyway:
+    enabled: true
+
+  jpa:
+    hibernate:
+      ddl-auto: validate

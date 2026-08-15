@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: secret_santa
+      POSTGRES_USER: secret_santa_user
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
