@@ -1,0 +1,8 @@
+CREATE TABLE events(
+    id  UUID    PRIMARY KEY,
+    name VARCHAR(120)   NOT NULL,
+    owner_id UUID NOT NULL REFERENCES users(id),
+    deadline TIMESTAMPTZ NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+
+)
