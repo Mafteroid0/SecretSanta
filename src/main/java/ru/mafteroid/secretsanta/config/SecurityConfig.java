@@ -21,7 +21,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/register", "/assets/**")
+                        .requestMatchers("/", "/login", "/register", "/assets/**", "/error")
                         .permitAll()
 
                         .requestMatchers("/home", "/games", "/profile", "/api/**",
@@ -30,7 +30,9 @@ public class SecurityConfig {
                                 "/room",
                                 "/room/**",
                                 "/profile",
-                                "/profile/**")
+                                "/profile/**",
+                                "/join",
+                                "/join/**")
                         .authenticated()
 
                         .anyRequest()

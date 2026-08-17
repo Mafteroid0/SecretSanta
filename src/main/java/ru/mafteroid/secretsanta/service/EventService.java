@@ -30,7 +30,7 @@ public class EventService {
 
     public List<Event> findEventsByUsername(String username) {
         User user = userRepository.findByUsernameIgnoreCase(username).orElseThrow(() ->
-                new IllegalArgumentException("No such user")
+                new IllegalArgumentException("No such user: " + username)
         );
         return eventParticipantRepository.findAllByUser_Id(user.getId());
     }
@@ -38,6 +38,15 @@ public class EventService {
     public Event findEventById(UUID id) {
         return eventRepository.findById(id).orElseThrow(() ->
                 new IllegalArgumentException("No such event"));
+    }
+
+    @Transactional
+    public void join(String username, UUID eventId) {
+        Event event = findEventById(eventId);
+        //TODO: check if not participant
+        User user = userRepository.findByUsernameIgnoreCase(username).orElseThrow(() ->
+                new IllegalArgumentException("No such user"));
+        eventParticipantRepository.save(new EventParticipant(event, user));
     }
 
     @Transactional
