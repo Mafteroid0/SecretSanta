@@ -7,10 +7,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import ru.mafteroid.secretsanta.entity.Event;
 import ru.mafteroid.secretsanta.service.EventService;
 
 import java.util.List;
+import java.util.UUID;
 
 @Controller
 public class PageController {
@@ -54,5 +56,23 @@ public class PageController {
         List<Event> events = eventService.findEventsByUsername(username);
         model.addAttribute("events", events);
         return "games";
+    }
+
+    @GetMapping("/create")
+    public String create(){
+        return "create";
+    }
+
+    @GetMapping("/room/{eventId}")
+    public String room(@PathVariable String eventId, Model model) {
+        Event event = eventService.findEventById(UUID.fromString(eventId));
+        model.addAttribute("event", event);
+        return "room";
+
+    }
+
+    @GetMapping("/room")
+    public String noRoom(){
+        return "redirect:/games";
     }
 }

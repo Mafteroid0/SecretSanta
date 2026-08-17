@@ -1,0 +1,20 @@
+package ru.mafteroid.secretsanta.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import ru.mafteroid.secretsanta.entity.Event;
+import ru.mafteroid.secretsanta.entity.EventParticipant;
+
+import java.util.List;
+import java.util.UUID;
+
+public interface EventParticipantRepository extends JpaRepository<EventParticipant, UUID> {
+    @Query("""
+    SELECT ep.event
+    FROM EventParticipant ep
+    WHERE ep.user.id = :userId
+    """)
+    List<Event> findAllByUser_Id(UUID userId);
+
+
+}

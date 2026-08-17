@@ -24,7 +24,11 @@ public class SecurityConfig {
                         .requestMatchers("/", "/login", "/register", "/assets/**")
                         .permitAll()
 
-                        .requestMatchers("/home", "/games", "/profile", "/api/**")
+                        .requestMatchers("/home", "/games", "/profile", "/api/**",
+                                "/create",
+                                "/games/**",
+                                "/room",
+                                "/room/**")
                         .authenticated()
 
                         .anyRequest()
