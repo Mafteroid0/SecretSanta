@@ -28,7 +28,9 @@ public class SecurityConfig {
                                 "/create",
                                 "/games/**",
                                 "/room",
-                                "/room/**")
+                                "/room/**",
+                                "/profile",
+                                "/profile/**")
                         .authenticated()
 
                         .anyRequest()

@@ -3,7 +3,7 @@ ALTER TABLE events
 
 
 CREATE TABLE event_participants (
-    id UUID PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
     event_id UUID NOT NULL,
     user_id UUID NOT NULL,
