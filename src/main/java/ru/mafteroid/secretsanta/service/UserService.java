@@ -2,6 +2,7 @@ package ru.mafteroid.secretsanta.service;
 
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import ru.mafteroid.secretsanta.dto.UserResponse;
 import ru.mafteroid.secretsanta.entity.User;
 import ru.mafteroid.secretsanta.repository.EventParticipantRepository;
 import ru.mafteroid.secretsanta.repository.UserRepository;
@@ -22,6 +23,8 @@ public class UserService {
         return userRepository.findByUsernameIgnoreCase(username)
                 .orElseThrow(() -> new UsernameNotFoundException(username));
     }
+
+
     public List<User> findUsersByEventId(UUID eventId) {
         return eventParticipantRepository.findAllByEvent_Id(eventId);
 

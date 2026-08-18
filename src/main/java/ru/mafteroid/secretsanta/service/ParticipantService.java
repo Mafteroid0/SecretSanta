@@ -2,6 +2,7 @@ package ru.mafteroid.secretsanta.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.mafteroid.secretsanta.dto.GiftAssignmentResponse;
 import ru.mafteroid.secretsanta.dto.ParticipantResponse;
 import ru.mafteroid.secretsanta.entity.Event;
 import ru.mafteroid.secretsanta.entity.EventParticipant;
@@ -66,6 +67,24 @@ public class ParticipantService {
                         toResponse(participantEntity, ownerId)
                 )
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public GiftAssignmentResponse getMyAssignment(UUID eventId, String username) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("No such event"));
+        if (!event.isStarted()){
+            throw new IllegalArgumentException("Event is not started");
+        }
+        User user = userRepository.findByUsernameIgnoreCase(username)
+                .orElseThrow(() -> new IllegalArgumentException("No such user"));
+        EventParticipant participant = participantRepository
+                .findByEvent_IdAndUser_Id(eventId, user.getId());
+        User gifted = participant.getGiftedUser();
+        if (gifted == null) {
+            throw new IllegalStateException("Gifted user is null");
+        }
+        return new GiftAssignmentResponse(gifted.getId(), gifted.getUsername(), gifted.getDisplayName());
     }
 
     private static ParticipantResponse toResponse(

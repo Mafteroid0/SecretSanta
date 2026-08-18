@@ -27,11 +27,18 @@
         <div class="col" style="width: 1226px;min-height: 100vh;margin: 67px;border-width: 43px;border-color: rgb(73,72,91);">
             <hr>
             <h1 id="roomName"></h1>
+            <div id="waitingForStart"></div>
+            <div id="assignmentCard" class="card d-none">
+                <div class="card-body">
+                    <h1 class="card-title">Вы дарите подарок:&nbsp;<a id="giftedUserLink" href="#"><span id="giftedUserName"></span></a></h1>
+                </div>
+            </div>
             <p id="roomDeadline"></p>
             <p id="roomStatus"></p>
             <div id="roomError"></div>
             <div id="participantsList"></div>
         </div>
+        <div class="col" style="margin-left: 4px;padding-left: 8px;"><button class="btn btn-primary text-center d-none" id="startGameButton" type="button" style="margin-right: 1px;margin-left: 23px;">Start game</button></div>
     </div>
     <div class="games-list">
         <div th:each="event : ${events}"></div>

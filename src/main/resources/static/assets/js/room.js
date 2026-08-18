@@ -9,11 +9,26 @@
     const roomStatus =
         document.getElementById("roomStatus");
 
+    const roomError =
+        document.getElementById("roomError");
+
     const participantsList =
         document.getElementById("participantsList");
 
-    const roomError =
-        document.getElementById("roomError");
+    const startGameButton =
+        document.getElementById("startGameButton");
+
+    const assignmentCard =
+        document.getElementById("assignmentCard");
+
+    const giftedUserName =
+        document.getElementById("giftedUserName");
+
+    const giftedUserLink =
+        document.getElementById("giftedUserLink");
+
+    const waitingForStart =
+        document.getElementById("waitingForStart");
 
 
     const pathParts =
@@ -26,13 +41,17 @@
 
 
     async function loadRoom() {
-
         try {
 
-            const [event, participants] =
+            const [event, currentUser, participants] =
                 await Promise.all([
+
                     api.request(
                         `/api/v1/events/${encodeURIComponent(eventId)}`
+                    ),
+
+                    api.request(
+                        "/api/v1/users/me"
                     ),
 
                     api.request(
@@ -42,6 +61,13 @@
 
             renderEvent(event);
             renderParticipants(participants);
+            renderStartButton(event, currentUser);
+
+            if (event.started) {
+                await loadAssignment();
+            } else {
+                showWaitingState();
+            }
 
         } catch (error) {
 
@@ -52,7 +78,7 @@
 
             if (roomError) {
                 roomError.textContent =
-                    "Не удалось загрузить игру";
+                    error.message ?? "Не удалось загрузить игру";
             }
         }
     }
@@ -61,8 +87,7 @@
     function renderEvent(event) {
 
         if (roomName) {
-            roomName.textContent =
-                event.name;
+            roomName.textContent = event.name;
         }
 
         if (roomDeadline) {
@@ -105,27 +130,30 @@
 
         for (const participant of participants) {
 
-            const participantElement =
+            const container =
                 document.createElement("div");
 
-            participantElement.classList.add(
-                "participant"
+            container.classList.add(
+                "d-flex",
+                "align-items-center",
+                "gap-2",
+                "mb-2"
             );
 
 
-            const name =
+            const userLink =
                 document.createElement("a");
 
-            name.href =
+            userLink.href =
                 `/profile/${encodeURIComponent(
                     participant.username
                 )}`;
 
-            name.textContent =
+            userLink.textContent =
                 participant.displayName;
 
 
-            participantElement.appendChild(name);
+            container.appendChild(userLink);
 
 
             if (participant.owner) {
@@ -133,25 +161,136 @@
                 const ownerBadge =
                     document.createElement("span");
 
-                ownerBadge.textContent =
-                    " Owner";
-
                 ownerBadge.classList.add(
                     "badge",
-                    "text-bg-primary",
-                    "ms-2"
+                    "text-bg-primary"
                 );
 
-                participantElement.appendChild(
-                    ownerBadge
-                );
+                ownerBadge.textContent = "Owner";
+
+                container.appendChild(ownerBadge);
             }
 
 
-            participantsList.appendChild(
-                participantElement
+            participantsList.appendChild(container);
+        }
+    }
+
+
+    function renderStartButton(event, currentUser) {
+
+        if (!startGameButton) {
+            return;
+        }
+
+        const isOwner =
+            event.ownerId === currentUser.id;
+
+        if (isOwner && !event.started) {
+
+            startGameButton.classList.remove(
+                "d-none"
+            );
+
+        } else {
+
+            startGameButton.classList.add(
+                "d-none"
             );
         }
+    }
+
+
+    function showWaitingState() {
+
+        if (assignmentCard) {
+            assignmentCard.classList.add(
+                "d-none"
+            );
+        }
+
+        if (waitingForStart) {
+            waitingForStart.classList.remove(
+                "d-none"
+            );
+        }
+    }
+
+
+    async function loadAssignment() {
+
+        const assignment =
+            await api.request(
+                `/api/v1/events/${encodeURIComponent(eventId)}/participants/me/assignment`
+            );
+
+
+        if (waitingForStart) {
+            waitingForStart.classList.add(
+                "d-none"
+            );
+        }
+
+
+        if (giftedUserName) {
+            giftedUserName.textContent =
+                assignment.displayName;
+        }
+
+
+        if (giftedUserLink) {
+
+            giftedUserLink.href =
+                `/profile/${encodeURIComponent(
+                    assignment.username
+                )}`;
+        }
+
+
+        if (assignmentCard) {
+            assignmentCard.classList.remove(
+                "d-none"
+            );
+        }
+    }
+
+
+    if (startGameButton) {
+
+        startGameButton.addEventListener(
+            "click",
+            async () => {
+
+                startGameButton.disabled = true;
+
+                try {
+
+                    await api.request(
+                        `/api/v1/events/${encodeURIComponent(eventId)}/start`,
+                        {
+                            method: "POST"
+                        }
+                    );
+
+                    startGameButton.classList.add(
+                        "d-none"
+                    );
+
+                    await loadAssignment();
+
+                } catch (error) {
+
+                    console.error(error);
+
+                    if (roomError) {
+                        roomError.textContent =
+                            error.message;
+                    }
+
+                    startGameButton.disabled = false;
+                }
+            }
+        );
     }
 
 

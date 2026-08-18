@@ -7,7 +7,7 @@ import ru.mafteroid.secretsanta.dto.RegisterForm;
 import ru.mafteroid.secretsanta.service.RegistrationService;
 
 @Controller
-public class RegistrationController {
+public class    RegistrationController {
     private final RegistrationService registrationService;
 
     public RegistrationController(RegistrationService registrationService) {

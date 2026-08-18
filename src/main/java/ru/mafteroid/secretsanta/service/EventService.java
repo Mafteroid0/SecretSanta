@@ -22,11 +22,14 @@ public class EventService {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
     private final EventParticipantRepository eventParticipantRepository;
+    private final GiftAssignmentGenerator assignmentGenerator;
 
-    public EventService(EventRepository eventRepository, UserRepository userRepository, EventParticipantRepository eventParticipantRepository) {
+    public EventService(EventRepository eventRepository, UserRepository userRepository,
+                        EventParticipantRepository eventParticipantRepository, GiftAssignmentGenerator assignmentGenerator) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.eventParticipantRepository = eventParticipantRepository;
+        this.assignmentGenerator = assignmentGenerator;
     }
 
     private static EventResponse toResponse(Event event) {
@@ -75,5 +78,21 @@ public class EventService {
         EventParticipant eventParticipant = new EventParticipant(event, user);
         eventParticipantRepository.save(eventParticipant);
         return toResponse(event);
+    }
+
+    @Transactional
+    public EventResponse start(UUID eventId, String username) {
+        User user = userRepository.findByUsernameIgnoreCase(username)
+                .orElseThrow(()-> new IllegalArgumentException("No such user"));
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("No such event"));
+        if (!event.getOwner().equals(user)) {
+            throw new IllegalArgumentException("You can't start this game");
+        }
+
+        assignmentGenerator.assign(eventParticipantRepository.findByEvent_Id(eventId));
+        event.start();
+        return toResponse(event);
+
     }
 }

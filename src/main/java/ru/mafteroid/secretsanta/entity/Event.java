@@ -57,6 +57,9 @@ public class Event {
         return started;
     }
     public void start() {
+        if (started) {
+            throw new IllegalStateException("Event already started");
+        }
         this.started = true;
     }
 

@@ -56,9 +56,10 @@ public class EventApiController {
         eventService.join(authentication.getName(), eventId);
     }
 
-    @GetMapping("/{eventId}/participants")
-    public List<ParticipantResponse> getParticipants(@PathVariable UUID eventId, Authentication authentication) {
-        return participantService.findAllByEventId(eventId, authentication.getName());
+
+    @PostMapping("/{eventId}/start")
+    public EventResponse startEvent(@PathVariable UUID eventId, Authentication authentication) {
+        return eventService.start(eventId, authentication.getName());
 
     }
 }

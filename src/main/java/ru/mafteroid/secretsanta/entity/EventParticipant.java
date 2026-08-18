@@ -32,6 +32,16 @@ public class EventParticipant {
         this.giftedUser = null;
     }
 
+    public void assignGiftedUser(User giftedUser) {
+        if (user == null) {
+            throw new IllegalStateException("user is null");
+        }
+        if (this.user.getId().equals(giftedUser.getId())) {
+            throw new IllegalStateException("Participant cannot be assigned to themselves");
+        }
+        this.giftedUser = giftedUser;
+    }
+
     public UUID getId() {
         return id;
     }
