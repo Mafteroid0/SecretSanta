@@ -58,10 +58,10 @@ public class PageController {
     }
 
     @GetMapping("/games")
-    public String games(Authentication authentication, Model model) {
-        String username = authentication.getName();
-        List<Event> events = eventService.findEventsByUsername(username);
-        model.addAttribute("events", events);
+    public String games() {
+//        String username = authentication.getName();
+//        List<Event> events = eventService.findEventsByUsername(username);
+//        model.addAttribute("events", events);
         return "games";
     }
 
@@ -71,11 +71,11 @@ public class PageController {
     }
 
     @GetMapping("/room/{eventId}")
-    public String room(@PathVariable String eventId, Model model) {
-        Event event = eventService.findEventById(UUID.fromString(eventId));
-        model.addAttribute("event", event);
-        List<User> users = userService.findUsersByEventId(event.getId());
-        model.addAttribute("users", users);
+    public String room(@PathVariable UUID eventId) {
+//        Event event = eventService.findEventById(UUID.fromString(eventId));
+//        model.addAttribute("event", event);
+//        List<User> users = userService.findUsersByEventId(event.getId());
+//        model.addAttribute("users", users);
         return "room";
 
     }

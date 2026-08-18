@@ -13,7 +13,7 @@ mkdir -p "$STATIC"
 
 # Удаляем предыдущий экспорт Bootstrap Studio
 find "$TEMPLATES" -maxdepth 1 -type f -name "*.html" -delete
-rm -rf "$STATIC/assets"
+#rm -rf "$STATIC/assets"
 
 # HTML -> Thymeleaf templates
 find "$EXPORT_DIR" -maxdepth 1 -type f -name "*.html" -exec cp {} "$TEMPLATES/" \;

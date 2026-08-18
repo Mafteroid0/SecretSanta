@@ -24,5 +24,10 @@ public interface EventParticipantRepository extends JpaRepository<EventParticipa
     """)
     List<User> findAllByEvent_Id(UUID eventId);
 
+    List<EventParticipant> findByEvent_Id(UUID eventId);
+    boolean existsByEvent_IdAndUser_Id(UUID eventId, UUID userId);
+
+
+
 
 }

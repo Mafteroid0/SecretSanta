@@ -31,4 +31,18 @@ public class EventParticipant {
         this.user = user;
         this.giftedUser = null;
     }
+
+    public UUID getId() {
+        return id;
+    }
+    public Event getEvent() {
+        return event;
+    }
+
+    public User getUser() {
+        return user;
+    }
+    public User getGiftedUser() {
+        return giftedUser;
+    }
 }

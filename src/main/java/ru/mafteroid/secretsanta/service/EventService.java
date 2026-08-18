@@ -2,7 +2,8 @@ package ru.mafteroid.secretsanta.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.mafteroid.secretsanta.dto.CreateEventForm;
+import ru.mafteroid.secretsanta.dto.CreateEventRequest;
+import ru.mafteroid.secretsanta.dto.EventResponse;
 import ru.mafteroid.secretsanta.entity.Event;
 import ru.mafteroid.secretsanta.entity.EventParticipant;
 import ru.mafteroid.secretsanta.entity.User;
@@ -28,29 +29,40 @@ public class EventService {
         this.eventParticipantRepository = eventParticipantRepository;
     }
 
-    public List<Event> findEventsByUsername(String username) {
+    private static EventResponse toResponse(Event event) {
+        return new EventResponse(event.getId(), event.getName(), event.getDeadline(),
+                event.isStarted(), event.getOwner().getId());
+    }
+
+    public List<EventResponse> findEventsByUsername(String username) {
         User user = userRepository.findByUsernameIgnoreCase(username).orElseThrow(() ->
                 new IllegalArgumentException("No such user: " + username)
         );
-        return eventParticipantRepository.findAllByUser_Id(user.getId());
+        return eventParticipantRepository.findAllByUser_Id(user.getId()).stream().map(EventService::toResponse)
+                .toList();
     }
 
-    public Event findEventById(UUID id) {
-        return eventRepository.findById(id).orElseThrow(() ->
-                new IllegalArgumentException("No such event"));
+    public EventResponse findEventById(UUID id) {
+        return toResponse(eventRepository.findById(id).orElseThrow(() ->
+                new IllegalArgumentException("No such event")));
     }
 
     @Transactional
     public void join(String username, UUID eventId) {
-        Event event = findEventById(eventId);
-        //TODO: check if not participant
+        Event event = eventRepository.findById(eventId).orElseThrow(() ->
+                new IllegalArgumentException("No such event"));
+
         User user = userRepository.findByUsernameIgnoreCase(username).orElseThrow(() ->
                 new IllegalArgumentException("No such user"));
+
+        if (eventParticipantRepository.existsByEvent_IdAndUser_Id(eventId, user.getId())) {
+            throw new IllegalArgumentException("User already joined");
+        }
         eventParticipantRepository.save(new EventParticipant(event, user));
     }
 
     @Transactional
-    public Event create(CreateEventForm form, String username) {
+    public EventResponse create(CreateEventRequest form, String username) {
         ZoneId zone = ZoneId.of("Europe/Moscow");
         Instant deadline = form.deadline()
                 .atZone(zone)
@@ -62,6 +74,6 @@ public class EventService {
         eventRepository.save(event);
         EventParticipant eventParticipant = new EventParticipant(event, user);
         eventParticipantRepository.save(eventParticipant);
-        return event;
+        return toResponse(event);
     }
 }
