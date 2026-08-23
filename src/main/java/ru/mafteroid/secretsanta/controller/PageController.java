@@ -99,7 +99,7 @@ public class PageController {
         if(authentication.getName().equals(username)) {
             return "redirect:/profile";
         }
-        return "user";
+        return "profile";
     }
 
 }
