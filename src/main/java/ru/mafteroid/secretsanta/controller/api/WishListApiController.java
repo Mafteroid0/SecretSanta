@@ -5,7 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import ru.mafteroid.secretsanta.dto.CreateWishListItemRequest;
+import ru.mafteroid.secretsanta.dto.ImportWishlistRequest;
 import ru.mafteroid.secretsanta.dto.WishlistItemResponse;
+import ru.mafteroid.secretsanta.service.WishListImportService;
 import ru.mafteroid.secretsanta.service.WishListService;
 
 import java.util.List;
@@ -15,11 +17,13 @@ import java.util.UUID;
 @RequestMapping("/api/v1")
 public class WishListApiController {
     private final WishListService wishlistService;
+    private final WishListImportService wishListImportService;
 
     public WishListApiController(
-            WishListService wishlistService
-    ) {
+            WishListService wishlistService,
+            WishListImportService wishListImportService) {
         this.wishlistService = wishlistService;
+        this.wishListImportService = wishListImportService;
     }
 
     @GetMapping("/users/me/wishlist")
@@ -59,6 +63,18 @@ public class WishListApiController {
         wishlistService.delete(
                 authentication.getName(),
                 itemId
+        );
+    }
+
+    @PostMapping("/users/me/wishlist/import")
+    @ResponseStatus(HttpStatus.CREATED)
+    public List<WishlistItemResponse> importWishlist(
+            @Valid @RequestBody ImportWishlistRequest request,
+            Authentication authentication
+    ){
+        return wishListImportService.importWishlist(
+                authentication.getName(),
+                request.url()
         );
     }
 }

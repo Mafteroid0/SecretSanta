@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.mafteroid.secretsanta.dto.CreateEventRequest;
 import ru.mafteroid.secretsanta.dto.CreateWishListItemRequest;
+import ru.mafteroid.secretsanta.dto.ImportedWishListItem;
 import ru.mafteroid.secretsanta.dto.WishlistItemResponse;
 import ru.mafteroid.secretsanta.entity.User;
 import ru.mafteroid.secretsanta.entity.WishListItem;
@@ -86,6 +87,18 @@ public class WishListService {
             throw new RuntimeException("user does not belong to wishlist");
         }
         wishListItemRepository.delete(wishListItem);
+    }
+
+    @Transactional
+    public List<WishlistItemResponse> importItems(String username, List<ImportedWishListItem> importedItems){
+        User user = findUser(username);
+        List<WishListItem> items = importedItems.stream()
+                .map(imported -> new WishListItem(user, imported.name(), normalizeDescription(imported.description())))
+                .toList();
+        return wishListItemRepository.saveAll(items)
+                .stream()
+                .map(this::toResponse)
+                .toList();
     }
 
 }
