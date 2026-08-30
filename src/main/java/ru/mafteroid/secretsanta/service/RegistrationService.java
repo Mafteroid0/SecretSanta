@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.mafteroid.secretsanta.dto.RegisterForm;
 import ru.mafteroid.secretsanta.entity.User;
+import ru.mafteroid.secretsanta.exceptions.ConflictException;
 import ru.mafteroid.secretsanta.repository.UserRepository;
 
 @Service
@@ -19,7 +20,7 @@ public class RegistrationService {
     @Transactional
     public void register(RegisterForm form) {
         if (userRepository.existsByUsernameIgnoreCase(form.username())){
-            throw new IllegalArgumentException("This username is already in use");
+            throw new ConflictException("This username is already in use");
         }
         String encodedPassword = passwordEncoder.encode(form.password());
 

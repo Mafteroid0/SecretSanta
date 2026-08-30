@@ -7,6 +7,9 @@ import ru.mafteroid.secretsanta.dto.EventResponse;
 import ru.mafteroid.secretsanta.entity.Event;
 import ru.mafteroid.secretsanta.entity.EventParticipant;
 import ru.mafteroid.secretsanta.entity.User;
+import ru.mafteroid.secretsanta.exceptions.ConflictException;
+import ru.mafteroid.secretsanta.exceptions.ForbiddenOperationException;
+import ru.mafteroid.secretsanta.exceptions.ResourceNotFoundException;
 import ru.mafteroid.secretsanta.repository.EventParticipantRepository;
 import ru.mafteroid.secretsanta.repository.EventRepository;
 import ru.mafteroid.secretsanta.repository.UserRepository;
@@ -39,7 +42,7 @@ public class EventService {
 
     public List<EventResponse> findEventsByUsername(String username) {
         User user = userRepository.findByUsernameIgnoreCase(username).orElseThrow(() ->
-                new IllegalArgumentException("No such user: " + username)
+                new ResourceNotFoundException("No such user: " + username)
         );
         return eventParticipantRepository.findAllByUser_Id(user.getId()).stream().map(EventService::toResponse)
                 .toList();
@@ -47,20 +50,24 @@ public class EventService {
 
     public EventResponse findEventById(UUID id) {
         return toResponse(eventRepository.findById(id).orElseThrow(() ->
-                new IllegalArgumentException("No such event")));
+                new ResourceNotFoundException("No such event")));
     }
 
     @Transactional
     public void join(String username, UUID eventId) {
         Event event = eventRepository.findById(eventId).orElseThrow(() ->
-                new IllegalArgumentException("No such event"));
+                new ResourceNotFoundException("No such event"));
 
         User user = userRepository.findByUsernameIgnoreCase(username).orElseThrow(() ->
-                new IllegalArgumentException("No such user"));
+                new ResourceNotFoundException("No such user"));
 
         if (eventParticipantRepository.existsByEvent_IdAndUser_Id(eventId, user.getId())) {
-            throw new IllegalArgumentException("User already joined");
+            throw new ConflictException("User already joined");
         }
+        if (event.isStarted()){
+            throw new ConflictException("Event is already started");
+        }
+
         eventParticipantRepository.save(new EventParticipant(event, user));
     }
 
@@ -71,7 +78,7 @@ public class EventService {
                 .atZone(zone)
                 .toInstant();
         User user = userRepository.findByUsernameIgnoreCase(username).orElseThrow(
-                () -> new IllegalArgumentException("No such user")
+                () -> new ResourceNotFoundException("No such user")
         );
         Event event = new Event(form.name(), user, deadline);
         eventRepository.save(event);
@@ -83,11 +90,11 @@ public class EventService {
     @Transactional
     public EventResponse start(UUID eventId, String username) {
         User user = userRepository.findByUsernameIgnoreCase(username)
-                .orElseThrow(()-> new IllegalArgumentException("No such user"));
+                .orElseThrow(()-> new ResourceNotFoundException("No such user"));
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new IllegalArgumentException("No such event"));
+                .orElseThrow(() -> new ResourceNotFoundException("No such event"));
         if (!event.getOwner().equals(user)) {
-            throw new IllegalArgumentException("You can't start this game");
+            throw new ForbiddenOperationException("You can't start this game");
         }
 
         assignmentGenerator.assign(eventParticipantRepository.findByEvent_Id(eventId));

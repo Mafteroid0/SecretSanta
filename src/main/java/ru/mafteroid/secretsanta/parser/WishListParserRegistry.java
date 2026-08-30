@@ -1,6 +1,7 @@
 package ru.mafteroid.secretsanta.parser;
 
 import org.springframework.stereotype.Component;
+import ru.mafteroid.secretsanta.exceptions.BadRequestException;
 
 import java.net.URI;
 import java.util.List;
@@ -15,6 +16,6 @@ public class WishListParserRegistry {
 
     public WishListParser getParser(URI uri) {
         return parsers.stream().filter(parser -> parser.supports(uri)).findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("No parser found for " + uri.getHost()));
+                .orElseThrow(() -> new BadRequestException("No parser found for " + uri.getHost()));
     }
 }

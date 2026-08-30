@@ -7,6 +7,10 @@ import ru.mafteroid.secretsanta.dto.ParticipantResponse;
 import ru.mafteroid.secretsanta.entity.Event;
 import ru.mafteroid.secretsanta.entity.EventParticipant;
 import ru.mafteroid.secretsanta.entity.User;
+import ru.mafteroid.secretsanta.exceptions.BadRequestException;
+import ru.mafteroid.secretsanta.exceptions.ConflictException;
+import ru.mafteroid.secretsanta.exceptions.ForbiddenOperationException;
+import ru.mafteroid.secretsanta.exceptions.ResourceNotFoundException;
 import ru.mafteroid.secretsanta.repository.EventParticipantRepository;
 import ru.mafteroid.secretsanta.repository.EventRepository;
 import ru.mafteroid.secretsanta.repository.UserRepository;
@@ -36,14 +40,14 @@ public class ParticipantService {
     ) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() ->
-                        new IllegalArgumentException("No such event")
+                        new ResourceNotFoundException("No such event")
                 );
 
         User currentUser =
                 userRepository
                         .findByUsernameIgnoreCase(currentUsername)
                         .orElseThrow(() ->
-                                new IllegalArgumentException("No such user")
+                                new ResourceNotFoundException("No such user")
                         );
 
         boolean participant =
@@ -53,7 +57,7 @@ public class ParticipantService {
                 );
 
         if (!participant) {
-            throw new IllegalArgumentException(
+            throw new ForbiddenOperationException(
                     "User is not a participant of this event"
             );
         }
@@ -72,17 +76,17 @@ public class ParticipantService {
     @Transactional(readOnly = true)
     public GiftAssignmentResponse getMyAssignment(UUID eventId, String username) {
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new IllegalArgumentException("No such event"));
+                .orElseThrow(() -> new ResourceNotFoundException("No such event"));
         if (!event.isStarted()){
-            throw new IllegalArgumentException("Event is not started");
+            throw new ConflictException("Event is not started");
         }
         User user = userRepository.findByUsernameIgnoreCase(username)
-                .orElseThrow(() -> new IllegalArgumentException("No such user"));
+                .orElseThrow(() -> new ResourceNotFoundException("No such user"));
         EventParticipant participant = participantRepository
                 .findByEvent_IdAndUser_Id(eventId, user.getId());
         User gifted = participant.getGiftedUser();
         if (gifted == null) {
-            throw new IllegalStateException("Gifted user is null");
+            throw new BadRequestException("Gifted user is null");
         }
         return new GiftAssignmentResponse(gifted.getId(), gifted.getUsername(), gifted.getDisplayName());
     }
