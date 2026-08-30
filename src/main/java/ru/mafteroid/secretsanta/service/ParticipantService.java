@@ -83,7 +83,8 @@ public class ParticipantService {
         User user = userRepository.findByUsernameIgnoreCase(username)
                 .orElseThrow(() -> new ResourceNotFoundException("No such user"));
         EventParticipant participant = participantRepository
-                .findByEvent_IdAndUser_Id(eventId, user.getId());
+                .findByEvent_IdAndUser_Id(eventId, user.getId())
+                .orElseThrow(() -> new ForbiddenOperationException("User is not a participant of this event."));
         User gifted = participant.getGiftedUser();
         if (gifted == null) {
             throw new BadRequestException("Gifted user is null");

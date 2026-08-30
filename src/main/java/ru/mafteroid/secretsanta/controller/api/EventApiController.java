@@ -1,6 +1,7 @@
 package ru.mafteroid.secretsanta.controller.api;
 
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -33,12 +34,12 @@ public class EventApiController {
     }
 
     @GetMapping("/{eventId}")
-    public EventResponse getEvent(@PathVariable UUID eventId) {
-        return eventService.findEventById(eventId);
+    public EventResponse getEvent(@PathVariable UUID eventId, Authentication authentication) {
+        return eventService.findEventById(eventId, authentication.getName());
     }
 
     @PostMapping
-    public ResponseEntity<EventResponse> createEvent(@RequestBody CreateEventRequest eventRequest,
+    public ResponseEntity<EventResponse> createEvent(@Valid @RequestBody CreateEventRequest eventRequest,
                                                      Authentication authentication) {
         EventResponse event = eventService.create(eventRequest, authentication.getName());
         URI location =

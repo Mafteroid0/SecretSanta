@@ -7,6 +7,7 @@ import ru.mafteroid.secretsanta.entity.EventParticipant;
 import ru.mafteroid.secretsanta.entity.User;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface EventParticipantRepository extends JpaRepository<EventParticipant, UUID> {
@@ -26,7 +27,7 @@ public interface EventParticipantRepository extends JpaRepository<EventParticipa
 
     List<EventParticipant> findByEvent_Id(UUID eventId);
     boolean existsByEvent_IdAndUser_Id(UUID eventId, UUID userId);
-    EventParticipant findByEvent_IdAndUser_Id(UUID eventId, UUID userId);
+    Optional<EventParticipant> findByEvent_IdAndUser_Id(UUID eventId, UUID userId);
 
 
 

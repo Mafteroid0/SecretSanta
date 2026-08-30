@@ -1,7 +1,9 @@
 package ru.mafteroid.secretsanta.controller;
 
 import jakarta.servlet.Registration;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import ru.mafteroid.secretsanta.dto.RegisterForm;
 import ru.mafteroid.secretsanta.service.RegistrationService;
@@ -15,9 +17,13 @@ public class    RegistrationController {
     }
 
     @PostMapping("/register")
-    public String register(RegisterForm registerForm) {
+    public String register(@Valid RegisterForm registerForm, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return "register";
+        }
+
         registrationService.register(registerForm);
-        System.out.println("FORM: " + registerForm);
+
         return "redirect:/login";
     }
 }

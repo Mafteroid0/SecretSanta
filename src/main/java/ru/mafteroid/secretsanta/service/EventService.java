@@ -7,6 +7,7 @@ import ru.mafteroid.secretsanta.dto.EventResponse;
 import ru.mafteroid.secretsanta.entity.Event;
 import ru.mafteroid.secretsanta.entity.EventParticipant;
 import ru.mafteroid.secretsanta.entity.User;
+import ru.mafteroid.secretsanta.exceptions.BadRequestException;
 import ru.mafteroid.secretsanta.exceptions.ConflictException;
 import ru.mafteroid.secretsanta.exceptions.ForbiddenOperationException;
 import ru.mafteroid.secretsanta.exceptions.ResourceNotFoundException;
@@ -40,6 +41,35 @@ public class EventService {
                 event.isStarted(), event.getOwner().getId());
     }
 
+    private void requireParticipant(
+            Event event,
+            User user
+    ) {
+        boolean participant =
+                eventParticipantRepository
+                        .existsByEvent_IdAndUser_Id(
+                                event.getId(),
+                                user.getId()
+                        );
+
+        if (!participant) {
+            throw new ForbiddenOperationException(
+                    "User is not a participant of this event"
+            );
+        }
+    }
+
+    private void requireOwner(
+            Event event,
+            User user
+    ) {
+        if (!event.getOwner().getId().equals(user.getId())) {
+            throw new ForbiddenOperationException(
+                    "Only the owner can perform this operation"
+            );
+        }
+    }
+
     public List<EventResponse> findEventsByUsername(String username) {
         User user = userRepository.findByUsernameIgnoreCase(username).orElseThrow(() ->
                 new ResourceNotFoundException("No such user: " + username)
@@ -48,9 +78,15 @@ public class EventService {
                 .toList();
     }
 
-    public EventResponse findEventById(UUID id) {
-        return toResponse(eventRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("No such event")));
+    public EventResponse findEventById(UUID id, String username) {
+        Event event = eventRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("No such event"));
+        User user = userRepository.findByUsernameIgnoreCase(username).orElseThrow(() ->
+                new ResourceNotFoundException("No such user"));
+
+        requireParticipant(event, user);
+
+        return toResponse(event);
     }
 
     @Transactional
@@ -77,6 +113,10 @@ public class EventService {
         Instant deadline = form.deadline()
                 .atZone(zone)
                 .toInstant();
+
+        if (!deadline.isAfter(Instant.now())) {
+            throw new BadRequestException("Deadline must be in the future");
+        }
         User user = userRepository.findByUsernameIgnoreCase(username).orElseThrow(
                 () -> new ResourceNotFoundException("No such user")
         );
@@ -93,9 +133,7 @@ public class EventService {
                 .orElseThrow(()-> new ResourceNotFoundException("No such user"));
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("No such event"));
-        if (!event.getOwner().equals(user)) {
-            throw new ForbiddenOperationException("You can't start this game");
-        }
+        requireOwner(event, user);
 
         assignmentGenerator.assign(eventParticipantRepository.findByEvent_Id(eventId));
         event.start();
