@@ -34,8 +34,8 @@ public class EventApiController {
     }
 
     @GetMapping("/{eventId}")
-    public EventResponse getEvent(@PathVariable UUID eventId, Authentication authentication) {
-        return eventService.findEventById(eventId, authentication.getName());
+    public EventResponse getEvent(@PathVariable UUID eventId) {
+        return eventService.findEventById(eventId);
     }
 
     @PostMapping

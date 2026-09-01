@@ -3,10 +3,13 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Secret Santa</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
 
-    <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css">
+    <title>Join game</title>
+
+    <link rel="stylesheet"
+          href="/assets/bootstrap/css/bootstrap.min.css">
 
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css?family=Inter:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800&amp;display=swap">
@@ -30,7 +33,6 @@
 
         </a>
 
-
         <button
                 data-bs-toggle="collapse"
                 class="navbar-toggler"
@@ -43,7 +45,6 @@
             <span class="navbar-toggler-icon"></span>
 
         </button>
-
 
         <div class="collapse navbar-collapse"
              id="navcol-1">
@@ -73,13 +74,10 @@
 
             </ul>
 
-
             <a class="btn btn-primary text-bg-danger shadow"
                role="button"
                href="/logout">
-
                 Log out
-
             </a>
 
         </div>
@@ -89,105 +87,94 @@
 </nav>
 
 
-<div class="row">
+<main class="container py-5">
 
-    <div class="col"
-         style="width: 1226px;min-height: 100vh;margin: 67px;border-width: 43px;border-color: rgb(73,72,91);">
+    <div class="row justify-content-center">
 
-        <hr>
+        <div class="col-12 col-md-8 col-lg-6">
+
+            <div class="card shadow">
+
+                <div class="card-body p-4 p-md-5">
+
+                    <div class="text-center mb-4">
+
+                        <h1 class="fw-bold">
+                            You've been invited!
+                        </h1>
+
+                        <p class="text-muted mb-0">
+                            Join this Secret Santa game
+                        </p>
+
+                    </div>
 
 
-        <h1 id="roomName"></h1>
+                    <div id="joinGameContent"
+                         class="d-none">
+
+                        <div class="mb-3">
+
+                            <span class="text-muted">
+                                Game:
+                            </span>
+
+                            <strong id="joinGameName"></strong>
+
+                        </div>
 
 
-        <div id="waitingForStart"></div>
+                        <div class="mb-4">
+
+                            <span class="text-muted">
+                                Deadline:
+                            </span>
+
+                            <strong id="joinGameDeadline"></strong>
+
+                        </div>
 
 
-        <div id="assignmentCard"
-             class="card d-none">
+                        <button
+                                id="joinGameButton"
+                                class="btn btn-primary w-100"
+                                type="button">
 
-            <div class="card-body">
+                            Join game
 
-                <h1 class="card-title">
+                        </button>
 
-                    Вы дарите подарок:&nbsp;
+                    </div>
 
-                    <a id="giftedUserLink"
-                       href="#">
 
-                        <span id="giftedUserName"></span>
+                    <div id="joinGameLoading"
+                         class="text-center text-muted">
 
-                    </a>
+                        Loading game...
 
-                </h1>
+                    </div>
+
+
+                    <div id="joinGameError"
+                         class="alert alert-danger d-none mt-3"
+                         role="alert">
+                    </div>
+
+                </div>
 
             </div>
 
         </div>
 
-
-        <p id="roomDeadline"></p>
-
-
-        <p id="roomStatus"></p>
-
-
-        <div id="roomError"></div>
-
-
-        <div id="participantsList"></div>
-
     </div>
 
-
-    <div class="col"
-         style="margin-left: 4px;padding-left: 8px;">
-
-
-        <button
-                class="btn btn-outline-primary text-center"
-                id="copyInviteButton"
-                type="button"
-                style="margin-right: 1px;margin-left: 23px;">
-
-            Copy invite
-
-        </button>
-
-
-        <button
-                class="btn btn-primary text-center d-none"
-                id="startGameButton"
-                type="button"
-                style="margin-right: 1px;margin-left: 23px;">
-
-            Start game
-
-        </button>
-
-
-        <button
-                class="btn btn-danger text-center d-none"
-                id="gameActionButton"
-                type="button"
-                style="margin-right: 1px;margin-left: 23px;">
-
-        </button>
-
-    </div>
-
-</div>
-
-
-<div class="games-list">
-    <div th:each="event : ${events}"></div>
-</div>
+</main>
 
 
 <script src="/assets/bootstrap/js/bootstrap.min.js"></script>
 <script src="/assets/js/api.js"></script>
 <script src="/assets/js/bold-and-dark.js"></script>
-<script src="/assets/js/room.js"></script>
+<script src="/assets/js/join.js"></script>
 
 </body>
 

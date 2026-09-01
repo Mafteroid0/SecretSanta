@@ -1,43 +1,71 @@
 (() => {
 
     const roomName =
-        document.getElementById("roomName");
+        document.getElementById(
+            "roomName"
+        );
 
     const roomDeadline =
-        document.getElementById("roomDeadline");
+        document.getElementById(
+            "roomDeadline"
+        );
 
     const roomStatus =
-        document.getElementById("roomStatus");
+        document.getElementById(
+            "roomStatus"
+        );
 
     const roomError =
-        document.getElementById("roomError");
+        document.getElementById(
+            "roomError"
+        );
 
     const participantsList =
-        document.getElementById("participantsList");
+        document.getElementById(
+            "participantsList"
+        );
 
     const startGameButton =
-        document.getElementById("startGameButton");
+        document.getElementById(
+            "startGameButton"
+        );
 
     const gameActionButton =
-        document.getElementById("gameActionButton");
+        document.getElementById(
+            "gameActionButton"
+        );
+
+    const copyInviteButton =
+        document.getElementById(
+            "copyInviteButton"
+        );
 
     const assignmentCard =
-        document.getElementById("assignmentCard");
+        document.getElementById(
+            "assignmentCard"
+        );
 
     const giftedUserName =
-        document.getElementById("giftedUserName");
+        document.getElementById(
+            "giftedUserName"
+        );
 
     const giftedUserLink =
-        document.getElementById("giftedUserLink");
+        document.getElementById(
+            "giftedUserLink"
+        );
 
     const waitingForStart =
-        document.getElementById("waitingForStart");
+        document.getElementById(
+            "waitingForStart"
+        );
 
 
     const pathParts =
         window.location.pathname
             .split("/")
             .filter(Boolean);
+
 
     const eventId =
         pathParts[pathParts.length - 1];
@@ -66,16 +94,26 @@
                     api.request(
                         `/api/v1/events/${encodeURIComponent(eventId)}/participants`
                     )
+
                 ]);
 
 
-            currentEvent = event;
-            currentUser = user;
+            currentEvent =
+                event;
+
+            currentUser =
+                user;
 
 
-            renderEvent(event);
+            renderEvent(
+                event
+            );
 
-            renderParticipants(participants);
+
+            renderParticipants(
+                participants
+            );
+
 
             renderControls(
                 event,
@@ -123,8 +161,9 @@
         if (roomDeadline) {
 
             roomDeadline.textContent =
-                new Date(event.deadline)
-                    .toLocaleString();
+                new Date(
+                    event.deadline
+                ).toLocaleString();
         }
 
 
@@ -151,7 +190,9 @@
         if (participants.length === 0) {
 
             const empty =
-                document.createElement("p");
+                document.createElement(
+                    "p"
+                );
 
 
             empty.textContent =
@@ -170,7 +211,9 @@
         for (const participant of participants) {
 
             const container =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
 
             container.classList.add(
@@ -182,7 +225,9 @@
 
 
             const userLink =
-                document.createElement("a");
+                document.createElement(
+                    "a"
+                );
 
 
             userLink.href =
@@ -203,7 +248,9 @@
             if (participant.owner) {
 
                 const ownerBadge =
-                    document.createElement("span");
+                    document.createElement(
+                        "span"
+                    );
 
 
                 ownerBadge.classList.add(
@@ -229,37 +276,46 @@
     }
 
 
-    function renderControls(event, user) {
+    function renderControls(
+        event,
+        user
+    ) {
 
         const isOwner =
             event.ownerId === user.id;
-
-
         if (startGameButton) {
 
-            if (isOwner && !event.started) {
+            if (
+                isOwner &&
+                !event.started
+            ) {
 
-                startGameButton.classList.remove(
-                    "d-none"
-                );
+                startGameButton
+                    .classList
+                    .remove(
+                        "d-none"
+                    );
 
             } else {
 
-                startGameButton.classList.add(
-                    "d-none"
-                );
+                startGameButton
+                    .classList
+                    .add(
+                        "d-none"
+                    );
             }
         }
-
 
         if (!gameActionButton) {
             return;
         }
 
 
-        gameActionButton.classList.remove(
-            "d-none"
-        );
+        gameActionButton
+            .classList
+            .remove(
+                "d-none"
+            );
 
 
         if (isOwner) {
@@ -285,17 +341,21 @@
 
         if (assignmentCard) {
 
-            assignmentCard.classList.add(
-                "d-none"
-            );
+            assignmentCard
+                .classList
+                .add(
+                    "d-none"
+                );
         }
 
 
         if (waitingForStart) {
 
-            waitingForStart.classList.remove(
-                "d-none"
-            );
+            waitingForStart
+                .classList
+                .remove(
+                    "d-none"
+                );
         }
     }
 
@@ -310,9 +370,11 @@
 
         if (waitingForStart) {
 
-            waitingForStart.classList.add(
-                "d-none"
-            );
+            waitingForStart
+                .classList
+                .add(
+                    "d-none"
+                );
         }
 
 
@@ -334,12 +396,67 @@
 
         if (assignmentCard) {
 
-            assignmentCard.classList.remove(
-                "d-none"
-            );
+            assignmentCard
+                .classList
+                .remove(
+                    "d-none"
+                );
         }
     }
 
+    if (copyInviteButton) {
+
+        copyInviteButton.addEventListener(
+            "click",
+            async () => {
+
+                const inviteLink =
+                    `${window.location.origin}/join/${encodeURIComponent(eventId)}`;
+
+
+                try {
+
+                    await navigator.clipboard.writeText(
+                        inviteLink
+                    );
+
+
+                    const oldText =
+                        copyInviteButton.textContent;
+
+
+                    copyInviteButton.textContent =
+                        "Copied!";
+
+
+                    setTimeout(
+                        () => {
+
+                            copyInviteButton.textContent =
+                                oldText;
+
+                        },
+                        1500
+                    );
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Failed to copy invite link:",
+                        error
+                    );
+
+
+                    if (roomError) {
+
+                        roomError.textContent =
+                            "Не удалось скопировать ссылку";
+                    }
+                }
+            }
+        );
+    }
 
     if (startGameButton) {
 
@@ -369,7 +486,8 @@
                         );
 
 
-                    currentEvent = event;
+                    currentEvent =
+                        event;
 
 
                     renderEvent(
@@ -388,7 +506,9 @@
 
                 } catch (error) {
 
-                    console.error(error);
+                    console.error(
+                        error
+                    );
 
 
                     if (roomError) {
@@ -405,7 +525,6 @@
             }
         );
     }
-
 
     if (gameActionButton) {
 
@@ -478,7 +597,9 @@
 
                 } catch (error) {
 
-                    console.error(error);
+                    console.error(
+                        error
+                    );
 
 
                     if (roomError) {

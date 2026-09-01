@@ -13,6 +13,34 @@
         document.getElementById("joinGameError");
 
 
+    const UUID_PATTERN =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+
+    function extractEventId(value) {
+
+        const input =
+            value.trim();
+
+        if (UUID_PATTERN.test(input)) {
+            return input;
+        }
+
+        const match =
+            input.match(
+                /(?:^|\/)join\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\/|[?#]|$)/i
+            );
+
+
+        if (match) {
+            return match[1];
+        }
+
+
+        return null;
+    }
+
+
     async function loadEvents() {
 
         if (!gamesList) {
@@ -22,7 +50,9 @@
         try {
 
             const events =
-                await api.request("/api/v1/events");
+                await api.request(
+                    "/api/v1/events"
+                );
 
             renderEvents(events);
 
@@ -42,6 +72,7 @@
     function renderEvents(events) {
 
         gamesList.replaceChildren();
+
 
         if (events.length === 0) {
 
@@ -65,8 +96,12 @@
             const link =
                 document.createElement("a");
 
-            link.href = `/room/${event.id}`;
-            link.textContent = event.name;
+            link.href =
+                `/room/${event.id}`;
+
+            link.textContent =
+                event.name;
+
 
             const deadline =
                 document.createElement("div");
@@ -75,7 +110,9 @@
                 new Date(event.deadline)
                     .toLocaleString();
 
+
             container.appendChild(link);
+
             container.appendChild(deadline);
 
             gamesList.appendChild(container);
@@ -91,16 +128,35 @@
 
                 event.preventDefault();
 
+
                 const eventId =
-                    joinInput.value.trim();
+                    extractEventId(
+                        joinInput.value
+                    );
 
 
                 joinInput.classList.remove(
                     "is-invalid"
                 );
 
+
                 if (joinError) {
                     joinError.textContent = "";
+                }
+
+                if (!eventId) {
+
+                    joinInput.classList.add(
+                        "is-invalid"
+                    );
+
+                    if (joinError) {
+
+                        joinError.textContent =
+                            "Введите корректный ID игры или ссылку-приглашение";
+                    }
+
+                    return;
                 }
 
 
@@ -113,39 +169,55 @@
                         }
                     );
 
+
                     window.location.href =
-                        `/room/${eventId}`;
+                        `/room/${encodeURIComponent(eventId)}`;
+
 
                 } catch (error) {
 
                     console.error(error);
 
+
                     joinInput.classList.add(
                         "is-invalid"
                     );
+
 
                     if (!joinError) {
                         return;
                     }
 
+
                     switch (error.status) {
 
                         case 400:
+
                             joinError.textContent =
                                 "Некорректный ID игры";
+
                             break;
+
 
                         case 404:
+
                             joinError.textContent =
                                 "Игра с таким ID не найдена";
+
                             break;
+
 
                         case 409:
+
                             joinError.textContent =
-                                "Вы уже участвуете в этой игре";
+                                error.message ??
+                                "Вы не можете присоединиться к этой игре";
+
                             break;
 
+
                         default:
+
                             joinError.textContent =
                                 "Не удалось присоединиться к игре";
                     }

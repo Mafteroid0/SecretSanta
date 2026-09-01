@@ -102,4 +102,9 @@ public class PageController {
         return "profile";
     }
 
+    @GetMapping("/join/{eventId}")
+    public String join(@PathVariable UUID eventId) {
+        return "join";
+    }
+
 }

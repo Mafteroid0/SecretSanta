@@ -78,13 +78,10 @@ public class EventService {
                 .toList();
     }
 
-    public EventResponse findEventById(UUID id, String username) {
+    public EventResponse findEventById(UUID id) {
         Event event = eventRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("No such event"));
-        User user = userRepository.findByUsernameIgnoreCase(username).orElseThrow(() ->
-                new ResourceNotFoundException("No such user"));
 
-        requireParticipant(event, user);
 
         return toResponse(event);
     }
