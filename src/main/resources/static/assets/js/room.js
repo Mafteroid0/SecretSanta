@@ -18,6 +18,9 @@
     const startGameButton =
         document.getElementById("startGameButton");
 
+    const leaveGameButton =
+        document.getElementById("leaveGameButton");
+
     const assignmentCard =
         document.getElementById("assignmentCard");
 
@@ -288,6 +291,53 @@
                     }
 
                     startGameButton.disabled = false;
+                }
+            }
+        );
+    }
+
+
+    if (leaveGameButton) {
+
+        leaveGameButton.addEventListener(
+            "click",
+            async () => {
+
+                const confirmed = window.confirm(
+                    "Вы уверены, что хотите выйти из игры?"
+                );
+
+                if (!confirmed) {
+                    return;
+                }
+
+                leaveGameButton.disabled = true;
+
+                if (roomError) {
+                    roomError.textContent = "";
+                }
+
+                try {
+
+                    await api.request(
+                        `/api/v1/events/${encodeURIComponent(eventId)}/participants/me`,
+                        {
+                            method: "DELETE"
+                        }
+                    );
+
+                    window.location.href = "/games";
+
+                } catch (error) {
+
+                    console.error(error);
+
+                    if (roomError) {
+                        roomError.textContent =
+                            error.message ?? "Не удалось выйти из игры";
+                    }
+
+                    leaveGameButton.disabled = false;
                 }
             }
         );

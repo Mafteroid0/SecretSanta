@@ -92,6 +92,23 @@ public class ParticipantService {
         return new GiftAssignmentResponse(gifted.getId(), gifted.getUsername(), gifted.getDisplayName());
     }
 
+    @Transactional
+    public void leave(UUID eventId, String username) {
+        User user = userRepository.findByUsernameIgnoreCase(username)
+                .orElseThrow(() -> new ResourceNotFoundException("No such user"));
+        Event event = eventRepository.findById(eventId)
+                        .orElseThrow(() -> new ResourceNotFoundException("No such event"));
+
+        if (event.isStarted()){
+            throw new ForbiddenOperationException("You can't leave started event");
+        }
+        if (event.getOwner().equals(user)) {
+            throw new ConflictException("Owner can not leave event");
+        }
+
+        participantRepository.deleteByEvent_IdAndUser_Id(eventId, user.getId());
+    }
+
     private static ParticipantResponse toResponse(
             EventParticipant participant,
             UUID ownerId

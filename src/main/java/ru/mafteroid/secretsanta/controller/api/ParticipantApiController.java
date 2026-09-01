@@ -1,10 +1,8 @@
 package ru.mafteroid.secretsanta.controller.api;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.mafteroid.secretsanta.dto.GiftAssignmentResponse;
 import ru.mafteroid.secretsanta.dto.ParticipantResponse;
 import ru.mafteroid.secretsanta.service.ParticipantService;
@@ -29,5 +27,12 @@ public class ParticipantApiController {
     public GiftAssignmentResponse getAssignment(@PathVariable UUID eventId, Authentication authentication) {
         return participantService.getMyAssignment(eventId, authentication.getName());
     }
-    //TODO: join and leave
+
+
+    @DeleteMapping("/me")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteAssignment(@PathVariable UUID eventId, Authentication authentication) {
+        participantService.leave(eventId, authentication.getName());
+
+    }
 }
