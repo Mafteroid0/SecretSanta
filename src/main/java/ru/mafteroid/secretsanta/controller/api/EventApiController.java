@@ -63,4 +63,10 @@ public class EventApiController {
         return eventService.start(eventId, authentication.getName());
 
     }
+
+    @DeleteMapping("/{eventId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteEvent(@PathVariable UUID eventId, Authentication authentication) {
+        eventService.delete(eventId, authentication.getName());
+    }
 }

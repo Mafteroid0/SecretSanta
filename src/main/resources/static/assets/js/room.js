@@ -18,8 +18,8 @@
     const startGameButton =
         document.getElementById("startGameButton");
 
-    const leaveGameButton =
-        document.getElementById("leaveGameButton");
+    const gameActionButton =
+        document.getElementById("gameActionButton");
 
     const assignmentCard =
         document.getElementById("assignmentCard");
@@ -43,10 +43,16 @@
         pathParts[pathParts.length - 1];
 
 
+    let currentEvent = null;
+
+    let currentUser = null;
+
+
     async function loadRoom() {
+
         try {
 
-            const [event, currentUser, participants] =
+            const [event, user, participants] =
                 await Promise.all([
 
                     api.request(
@@ -62,15 +68,30 @@
                     )
                 ]);
 
+
+            currentEvent = event;
+            currentUser = user;
+
+
             renderEvent(event);
+
             renderParticipants(participants);
-            renderStartButton(event, currentUser);
+
+            renderControls(
+                event,
+                user
+            );
+
 
             if (event.started) {
+
                 await loadAssignment();
+
             } else {
+
                 showWaitingState();
             }
+
 
         } catch (error) {
 
@@ -79,9 +100,12 @@
                 error
             );
 
+
             if (roomError) {
+
                 roomError.textContent =
-                    error.message ?? "Не удалось загрузить игру";
+                    error.message ??
+                    "Не удалось загрузить игру";
             }
         }
     }
@@ -90,16 +114,22 @@
     function renderEvent(event) {
 
         if (roomName) {
-            roomName.textContent = event.name;
+
+            roomName.textContent =
+                event.name;
         }
 
+
         if (roomDeadline) {
+
             roomDeadline.textContent =
                 new Date(event.deadline)
                     .toLocaleString();
         }
 
+
         if (roomStatus) {
+
             roomStatus.textContent =
                 event.started
                     ? "Игра началась"
@@ -114,6 +144,7 @@
             return;
         }
 
+
         participantsList.replaceChildren();
 
 
@@ -122,10 +153,15 @@
             const empty =
                 document.createElement("p");
 
+
             empty.textContent =
                 "Участников пока нет";
 
-            participantsList.appendChild(empty);
+
+            participantsList.appendChild(
+                empty
+            );
+
 
             return;
         }
@@ -135,6 +171,7 @@
 
             const container =
                 document.createElement("div");
+
 
             container.classList.add(
                 "d-flex",
@@ -147,16 +184,20 @@
             const userLink =
                 document.createElement("a");
 
+
             userLink.href =
                 `/profile/${encodeURIComponent(
                     participant.username
                 )}`;
 
+
             userLink.textContent =
                 participant.displayName;
 
 
-            container.appendChild(userLink);
+            container.appendChild(
+                userLink
+            );
 
 
             if (participant.owner) {
@@ -164,42 +205,78 @@
                 const ownerBadge =
                     document.createElement("span");
 
+
                 ownerBadge.classList.add(
                     "badge",
                     "text-bg-primary"
                 );
 
-                ownerBadge.textContent = "Owner";
 
-                container.appendChild(ownerBadge);
+                ownerBadge.textContent =
+                    "Owner";
+
+
+                container.appendChild(
+                    ownerBadge
+                );
             }
 
 
-            participantsList.appendChild(container);
+            participantsList.appendChild(
+                container
+            );
         }
     }
 
 
-    function renderStartButton(event, currentUser) {
+    function renderControls(event, user) {
 
-        if (!startGameButton) {
+        const isOwner =
+            event.ownerId === user.id;
+
+
+        if (startGameButton) {
+
+            if (isOwner && !event.started) {
+
+                startGameButton.classList.remove(
+                    "d-none"
+                );
+
+            } else {
+
+                startGameButton.classList.add(
+                    "d-none"
+                );
+            }
+        }
+
+
+        if (!gameActionButton) {
             return;
         }
 
-        const isOwner =
-            event.ownerId === currentUser.id;
 
-        if (isOwner && !event.started) {
+        gameActionButton.classList.remove(
+            "d-none"
+        );
 
-            startGameButton.classList.remove(
-                "d-none"
-            );
+
+        if (isOwner) {
+
+            gameActionButton.textContent =
+                "Delete game";
+
+            gameActionButton.dataset.action =
+                "delete";
 
         } else {
 
-            startGameButton.classList.add(
-                "d-none"
-            );
+            gameActionButton.textContent =
+                "Leave game";
+
+            gameActionButton.dataset.action =
+                "leave";
         }
     }
 
@@ -207,12 +284,15 @@
     function showWaitingState() {
 
         if (assignmentCard) {
+
             assignmentCard.classList.add(
                 "d-none"
             );
         }
 
+
         if (waitingForStart) {
+
             waitingForStart.classList.remove(
                 "d-none"
             );
@@ -229,6 +309,7 @@
 
 
         if (waitingForStart) {
+
             waitingForStart.classList.add(
                 "d-none"
             );
@@ -236,6 +317,7 @@
 
 
         if (giftedUserName) {
+
             giftedUserName.textContent =
                 assignment.displayName;
         }
@@ -251,6 +333,7 @@
 
 
         if (assignmentCard) {
+
             assignmentCard.classList.remove(
                 "d-none"
             );
@@ -264,80 +347,150 @@
             "click",
             async () => {
 
-                startGameButton.disabled = true;
+                startGameButton.disabled =
+                    true;
+
+
+                if (roomError) {
+
+                    roomError.textContent =
+                        "";
+                }
+
 
                 try {
 
-                    await api.request(
-                        `/api/v1/events/${encodeURIComponent(eventId)}/start`,
-                        {
-                            method: "POST"
-                        }
+                    const event =
+                        await api.request(
+                            `/api/v1/events/${encodeURIComponent(eventId)}/start`,
+                            {
+                                method: "POST"
+                            }
+                        );
+
+
+                    currentEvent = event;
+
+
+                    renderEvent(
+                        currentEvent
                     );
 
-                    startGameButton.classList.add(
-                        "d-none"
+
+                    renderControls(
+                        currentEvent,
+                        currentUser
                     );
+
 
                     await loadAssignment();
+
 
                 } catch (error) {
 
                     console.error(error);
 
+
                     if (roomError) {
+
                         roomError.textContent =
-                            error.message;
+                            error.message ??
+                            "Не удалось начать игру";
                     }
 
-                    startGameButton.disabled = false;
+
+                    startGameButton.disabled =
+                        false;
                 }
             }
         );
     }
 
 
-    if (leaveGameButton) {
+    if (gameActionButton) {
 
-        leaveGameButton.addEventListener(
+        gameActionButton.addEventListener(
             "click",
             async () => {
 
-                const confirmed = window.confirm(
-                    "Вы уверены, что хотите выйти из игры?"
-                );
+                const action =
+                    gameActionButton.dataset.action;
+
+
+                if (!action) {
+                    return;
+                }
+
+
+                const confirmationMessage =
+                    action === "delete"
+                        ? "Вы уверены, что хотите удалить игру?"
+                        : "Вы уверены, что хотите выйти из игры?";
+
+
+                const confirmed =
+                    window.confirm(
+                        confirmationMessage
+                    );
+
 
                 if (!confirmed) {
                     return;
                 }
 
-                leaveGameButton.disabled = true;
+
+                gameActionButton.disabled =
+                    true;
+
 
                 if (roomError) {
-                    roomError.textContent = "";
+
+                    roomError.textContent =
+                        "";
                 }
+
 
                 try {
 
-                    await api.request(
-                        `/api/v1/events/${encodeURIComponent(eventId)}/participants/me`,
-                        {
-                            method: "DELETE"
-                        }
-                    );
+                    if (action === "leave") {
 
-                    window.location.href = "/games";
+                        await api.request(
+                            `/api/v1/events/${encodeURIComponent(eventId)}/participants/me`,
+                            {
+                                method: "DELETE"
+                            }
+                        );
+
+                    } else if (action === "delete") {
+
+                        await api.request(
+                            `/api/v1/events/${encodeURIComponent(eventId)}`,
+                            {
+                                method: "DELETE"
+                            }
+                        );
+                    }
+
+
+                    window.location.href =
+                        "/games";
+
 
                 } catch (error) {
 
                     console.error(error);
 
+
                     if (roomError) {
+
                         roomError.textContent =
-                            error.message ?? "Не удалось выйти из игры";
+                            error.message ??
+                            "Не удалось выполнить действие";
                     }
 
-                    leaveGameButton.disabled = false;
+
+                    gameActionButton.disabled =
+                        false;
                 }
             }
         );

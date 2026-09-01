@@ -140,4 +140,15 @@ public class EventService {
         return toResponse(event);
 
     }
+
+    @Transactional
+    public void delete(UUID eventId, String username) {
+        User user = userRepository.findByUsernameIgnoreCase(username)
+                .orElseThrow(()-> new ResourceNotFoundException("No such user"));
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new ResourceNotFoundException("No such event"));
+        requireOwner(event, user);
+
+        eventRepository.delete(event);
+    }
 }
