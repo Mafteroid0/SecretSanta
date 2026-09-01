@@ -1,63 +1,30 @@
 (() => {
-
-    const form =
-        document.getElementById("createEventForm");
-
+    const form = document.getElementById("createEventForm");
     if (!form) {
         return;
     }
 
-    const errorElement =
-        document.getElementById("createEventError");
+    const errorElement = document.getElementById("createEventError");
+    const submitButton = form.querySelector("button[type='submit']");
 
-    form.addEventListener("submit", async (event) => {
+    form.addEventListener("submit", async event => {
         event.preventDefault();
-
-        const name =
-            document
-                .getElementById("eventName")
-                .value
-                .trim();
-
-        const deadline =
-            document
-                .getElementById("eventDeadline")
-                .value;
-
-        if (errorElement) {
-            errorElement.textContent = "";
-        }
+        errorElement.textContent = "";
+        submitButton.disabled = true;
 
         try {
-
-            const createdEvent = await api.request(
-                "/api/v1/events",
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-
-                    body: JSON.stringify({
-                        name,
-                        deadline
-                    })
-                }
-            );
-
-            window.location.href =
-                `/room/${createdEvent.id}`;
-
+            const createdEvent = await api.request("/api/v1/events", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    name: document.getElementById("eventName").value.trim(),
+                    deadline: document.getElementById("eventDeadline").value
+                })
+            });
+            window.location.href = `/room/${createdEvent.id}`;
         } catch (error) {
-
-            console.error(error);
-
-            if (errorElement) {
-                errorElement.textContent =
-                    error.message;
-            }
+            errorElement.textContent = error.message;
+            submitButton.disabled = false;
         }
     });
-
 })();

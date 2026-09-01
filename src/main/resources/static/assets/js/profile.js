@@ -1,488 +1,212 @@
 (() => {
+    const wishlist = document.getElementById("wishlist");
+    const notice = document.getElementById("wishlistNotice");
+    const addButton = document.getElementById("addWishButton");
+    const addForm = document.getElementById("addWishlistItemForm");
+    const nameInput = document.getElementById("wishlistItemName");
+    const descriptionInput = document.getElementById("wishlistItemDescription");
+    const addError = document.getElementById("wishlistError");
+    const importButton = document.getElementById("importWishlistButton");
+    const importForm = document.getElementById("importWishlistForm");
+    const importInput = document.getElementById("importWishlistUrl");
+    const importError = document.getElementById("importWishlistError");
+    const importSubmit = document.getElementById("importWishlistSubmit");
+    const editForm = document.getElementById("profileEditForm");
+    const displayNameInput = editForm?.querySelector('[name="displayName"]');
+    const editError = document.getElementById("profileEditError");
+    const profileDisplayName = document.getElementById("profileDisplayName");
 
-    const wishlist =
-        document.getElementById("wishlist");
-
-    const wishlistNotice =
-        document.getElementById("wishlistNotice");
-
-
-    // =========================
-    // ADD WISH
-    // =========================
-
-    const addWishButton =
-        document.getElementById("addWishButton");
-
-    const addForm =
-        document.getElementById("addWishlistItemForm");
-
-    const nameInput =
-        document.getElementById("wishlistItemName");
-
-    const descriptionInput =
-        document.getElementById("wishlistItemDescription");
-
-    const addErrorElement =
-        document.getElementById("wishlistError");
-
-
-    // =========================
-    // IMPORT
-    // =========================
-
-    const importWishlistButton =
-        document.getElementById("importWishlistButton");
-
-    const importForm =
-        document.getElementById("importWishlistForm");
-
-    const importUrlInput =
-        document.getElementById("importWishlistUrl");
-
-    const importErrorElement =
-        document.getElementById("importWishlistError");
-
-    const importSubmitButton =
-        document.getElementById("importWishlistSubmit");
-
-
-    // =========================
-    // PROFILE
-    // =========================
-
-    const pathParts =
-        window.location.pathname
-            .split("/")
-            .filter(Boolean);
-
-    const isOwnProfile =
-        pathParts.length === 1;
-
-    const viewedUsername =
-        isOwnProfile
-            ? null
-            : decodeURIComponent(pathParts[1]);
-
+    const pathParts = window.location.pathname.split("/").filter(Boolean);
+    const isOwnProfile = pathParts.length === 1;
+    const viewedUsername = isOwnProfile ? null : decodeURIComponent(pathParts[1]);
 
     if (isOwnProfile) {
-        addWishButton?.classList.remove("d-none");
-        importWishlistButton?.classList.remove("d-none");
+        editForm?.classList.remove("hidden");
+        addButton?.classList.remove("hidden");
+        importButton?.classList.remove("hidden");
     }
-
-
-    // =========================
-    // NOTICE
-    // =========================
 
     function showNotice(message, type = "success") {
-
-        if (!wishlistNotice) {
-            return;
-        }
-
-        wishlistNotice.replaceChildren();
-
-        if (!message) {
-            return;
-        }
-
-        const alert =
-            document.createElement("div");
-
-        alert.classList.add(
-            "alert",
-            `alert-${type}`,
-            "mb-0"
-        );
-
-        alert.setAttribute(
-            "role",
-            "alert"
-        );
-
-        alert.textContent =
-            message;
-
-        wishlistNotice.appendChild(alert);
+        notice.replaceChildren();
+        if (!message) return;
+        const element = document.createElement("div");
+        element.className = `alert alert-${type}`;
+        element.setAttribute("role", "alert");
+        element.textContent = message;
+        notice.append(element);
     }
-
-
-    // =========================
-    // LOAD WISHLIST
-    // =========================
-
-    async function loadWishlist() {
-
-        if (!wishlist) {
-            return;
-        }
-
-        try {
-
-            const url =
-                isOwnProfile
-                    ? "/api/v1/users/me/wishlist"
-                    : `/api/v1/users/${encodeURIComponent(viewedUsername)}/wishlist`;
-
-            const items =
-                await api.request(url);
-
-            renderWishlist(items);
-
-        } catch (error) {
-
-            console.error(error);
-
-            wishlist.textContent =
-                "Не удалось загрузить wishlist";
-        }
-    }
-
-
-    // =========================
-    // RENDER
-    // =========================
 
     function renderWishlist(items) {
-
         wishlist.replaceChildren();
 
-
-        if (items.length === 0) {
-
-            const empty =
-                document.createElement("p");
-
-            empty.classList.add(
-                "text-muted"
-            );
-
-            empty.textContent =
-                "Wishlist пока пуст";
-
-            wishlist.appendChild(empty);
-
+        if (!items.length) {
+            wishlist.textContent = "Вишлист пока пуст.";
+            wishlist.classList.add("muted");
             return;
         }
 
+        wishlist.classList.remove("muted");
 
         for (const item of items) {
+            const card = document.createElement("article");
+            const title = document.createElement("h3");
 
-            const card =
-                document.createElement("div");
-
-            card.classList.add(
-                "card",
-                "mb-3"
-            );
-
-
-            const body =
-                document.createElement("div");
-
-            body.classList.add(
-                "card-body"
-            );
-
-
-            const title =
-                document.createElement("h5");
-
-            title.classList.add(
-                "card-title"
-            );
-
-            title.textContent =
-                item.name;
-
-            body.appendChild(title);
-
+            card.className = "wish-card";
+            title.textContent = item.name;
+            card.append(title);
 
             if (item.description) {
-
-                const description =
-                    document.createElement("p");
-
-                description.classList.add(
-                    "card-text"
-                );
-
-                description.textContent =
-                    item.description;
-
-                body.appendChild(description);
+                const description = document.createElement("p");
+                description.textContent = item.description;
+                card.append(description);
             }
-
 
             if (isOwnProfile) {
-
-                const deleteButton =
-                    document.createElement("button");
-
-                deleteButton.classList.add(
-                    "btn",
-                    "btn-outline-danger"
-                );
-
-                deleteButton.type =
-                    "button";
-
-                deleteButton.textContent =
-                    "Удалить";
-
-                deleteButton.addEventListener(
-                    "click",
-                    () => deleteItem(item.id)
-                );
-
-                body.appendChild(
-                    deleteButton
-                );
+                const deleteButton = document.createElement("button");
+                deleteButton.className = "btn btn-danger-soft";
+                deleteButton.type = "button";
+                deleteButton.textContent = "Удалить";
+                deleteButton.addEventListener("click", () => deleteItem(item.id));
+                card.append(deleteButton);
             }
 
-
-            card.appendChild(body);
-
-            wishlist.appendChild(card);
+            wishlist.append(card);
         }
     }
 
+    async function loadWishlist() {
+        try {
+            const url = isOwnProfile
+                ? "/api/v1/users/me/wishlist"
+                : `/api/v1/users/${encodeURIComponent(viewedUsername)}/wishlist`;
 
-    // =========================
-    // DELETE
-    // =========================
+            renderWishlist(await api.request(url));
+        } catch {
+            wishlist.textContent = "Не удалось загрузить вишлист.";
+            wishlist.classList.add("error");
+        }
+    }
 
     async function deleteItem(itemId) {
+        if (!isOwnProfile) return;
 
-        if (!isOwnProfile) {
+        try {
+            await api.request(`/api/v1/users/me/wishlist/${itemId}`, {
+                method: "DELETE"
+            });
+
+            showNotice("");
+            await loadWishlist();
+        } catch (error) {
+            showNotice(error.message, "danger");
+        }
+    }
+
+    document.querySelectorAll("[data-dialog-open]").forEach(button => {
+        button.addEventListener("click", () =>
+            document.getElementById(button.dataset.dialogOpen)?.showModal()
+        );
+    });
+
+    document.querySelectorAll("[data-dialog-close]").forEach(button => {
+        button.addEventListener("click", () =>
+            button.closest("dialog")?.close()
+        );
+    });
+
+    editForm?.addEventListener("submit", async event => {
+        event.preventDefault();
+        if (!isOwnProfile) return;
+
+        const displayName = displayNameInput?.value.trim();
+        if (editError) editError.textContent = "";
+
+        if (!displayName) {
+            if (editError) editError.textContent = "Введите отображаемое имя.";
             return;
         }
 
         try {
+            const user = await api.request("/api/v1/users/me", {
+                method: "PATCH",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({displayName})
+            });
 
-            await api.request(
-                `/api/v1/users/me/wishlist/${itemId}`,
+            if (profileDisplayName) profileDisplayName.textContent = user.displayName;
+            if (displayNameInput) displayNameInput.value = user.displayName;
+
+            showNotice("Имя профиля обновлено.");
+        } catch (error) {
+            if (editError) editError.textContent = error.message;
+            else showNotice(error.message, "danger");
+        }
+    });
+
+    addForm?.addEventListener("submit", async event => {
+        event.preventDefault();
+        addError.textContent = "";
+
+        try {
+            await api.request("/api/v1/users/me/wishlist", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    name: nameInput.value.trim(),
+                    description: descriptionInput.value.trim()
+                })
+            });
+
+            addForm.reset();
+            document.getElementById("addWishlistItemModal").close();
+            showNotice("Желание добавлено.");
+            await loadWishlist();
+        } catch (error) {
+            addError.textContent = error.message;
+        }
+    });
+
+    importForm?.addEventListener("submit", async event => {
+        event.preventDefault();
+
+        const url = importInput.value.trim();
+        importError.textContent = "";
+
+        if (!url) {
+            importError.textContent = "Укажите ссылку на вишлист.";
+            return;
+        }
+
+        const previousText = importSubmit.textContent;
+        importSubmit.disabled = true;
+        importSubmit.textContent = "Импортируем…";
+
+        try {
+            const importedItems = await api.request(
+                "/api/v1/users/me/wishlist/import",
                 {
-                    method: "DELETE"
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({url})
                 }
             );
 
-            showNotice("");
+            importForm.reset();
+            document.getElementById("importWishlistModal").close();
+            showNotice(
+                `Импорт завершён. Добавлено: ${
+                    Array.isArray(importedItems) ? importedItems.length : 0
+                }`
+            );
 
             await loadWishlist();
-
         } catch (error) {
-
-            console.error(error);
-
-            showNotice(
-                error.message,
-                "danger"
-            );
+            importError.textContent = error.message;
+        } finally {
+            importSubmit.disabled = false;
+            importSubmit.textContent = previousText;
         }
-    }
-
-
-    // =========================
-    // ADD WISH
-    // =========================
-
-    if (addForm && isOwnProfile) {
-
-        addForm.addEventListener(
-            "submit",
-            async (event) => {
-
-                event.preventDefault();
-
-
-                if (addErrorElement) {
-                    addErrorElement.textContent = "";
-                }
-
-
-                try {
-
-                    await api.request(
-                        "/api/v1/users/me/wishlist",
-                        {
-                            method: "POST",
-
-                            headers: {
-                                "Content-Type":
-                                    "application/json"
-                            },
-
-                            body: JSON.stringify({
-                                name:
-                                    nameInput.value.trim(),
-
-                                description:
-                                    descriptionInput.value.trim()
-                            })
-                        }
-                    );
-
-
-                    addForm.reset();
-
-
-                    const modalElement =
-                        document.getElementById(
-                            "addWishlistItemModal"
-                        );
-
-                    const modal =
-                        bootstrap.Modal.getInstance(
-                            modalElement
-                        );
-
-                    modal?.hide();
-
-
-                    showNotice(
-                        "Wish added."
-                    );
-
-
-                    await loadWishlist();
-
-                } catch (error) {
-
-                    console.error(error);
-
-                    if (addErrorElement) {
-                        addErrorElement.textContent =
-                            error.message;
-                    }
-                }
-            }
-        );
-    }
-
-
-    // =========================
-    // IMPORT WISHLIST
-    // =========================
-
-    if (importForm && isOwnProfile) {
-
-        importForm.addEventListener(
-            "submit",
-            async (event) => {
-
-                event.preventDefault();
-
-
-                if (importErrorElement) {
-                    importErrorElement.textContent = "";
-                }
-
-
-                const url =
-                    importUrlInput.value.trim();
-
-
-                if (!url) {
-
-                    if (importErrorElement) {
-                        importErrorElement.textContent =
-                            "Укажи ссылку на wishlist";
-                    }
-
-                    return;
-                }
-
-
-                const previousText =
-                    importSubmitButton?.textContent;
-
-
-                if (importSubmitButton) {
-
-                    importSubmitButton.disabled =
-                        true;
-
-                    importSubmitButton.textContent =
-                        "Importing...";
-                }
-
-
-                try {
-
-                    const importedItems =
-                        await api.request(
-                            "/api/v1/users/me/wishlist/import",
-                            {
-                                method: "POST",
-
-                                headers: {
-                                    "Content-Type":
-                                        "application/json"
-                                },
-
-                                body: JSON.stringify({
-                                    url
-                                })
-                            }
-                        );
-
-
-                    importForm.reset();
-
-
-                    const modalElement =
-                        document.getElementById(
-                            "importWishlistModal"
-                        );
-
-                    const modal =
-                        bootstrap.Modal.getInstance(
-                            modalElement
-                        );
-
-                    modal?.hide();
-
-
-                    const importedCount =
-                        Array.isArray(importedItems)
-                            ? importedItems.length
-                            : 0;
-
-
-                    showNotice(
-                        `Импорт завершён. Добавлено: ${importedCount}`
-                    );
-
-
-                    await loadWishlist();
-
-                } catch (error) {
-
-                    console.error(error);
-
-                    if (importErrorElement) {
-                        importErrorElement.textContent =
-                            error.message;
-                    }
-
-                } finally {
-
-                    if (importSubmitButton) {
-
-                        importSubmitButton.disabled =
-                            false;
-
-                        importSubmitButton.textContent =
-                            previousText || "Import";
-                    }
-                }
-            }
-        );
-    }
-
+    });
 
     loadWishlist();
-
 })();

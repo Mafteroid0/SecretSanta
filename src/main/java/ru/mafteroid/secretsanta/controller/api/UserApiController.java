@@ -1,9 +1,10 @@
 package ru.mafteroid.secretsanta.controller.api;
 
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import ru.mafteroid.secretsanta.dto.UpdateUserRequest;
 import ru.mafteroid.secretsanta.dto.UserResponse;
 import ru.mafteroid.secretsanta.entity.User;
 import ru.mafteroid.secretsanta.service.UserService;
@@ -27,6 +28,11 @@ public class UserApiController {
                 user.getUsername(),
                 user.getDisplayName()
         );
+    }
+    @PatchMapping("/me")
+    UserResponse updateCurrentUser(Authentication authentication, @Valid @RequestBody UpdateUserRequest updateUserRequest) {
+        return userService.updateUser(authentication.getName(), updateUserRequest.displayName());
+
     }
 
 

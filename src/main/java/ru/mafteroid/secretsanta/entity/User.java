@@ -44,5 +44,9 @@ public class User {
         return passwordHash;
     }
 
+    public void changeDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
 
 }

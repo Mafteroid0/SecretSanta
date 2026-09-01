@@ -1,7 +1,5 @@
 window.api = {
-
     async request(url, options = {}) {
-
         const response = await fetch(url, {
             credentials: "same-origin",
             ...options
@@ -9,20 +7,13 @@ window.api = {
 
         if (!response.ok) {
             let body = null;
-
             try {
                 body = await response.json();
-            } catch (_) {
-                // response может не содержать JSON
-            }
+            } catch {}
 
-            const error = new Error(
-                body?.detail ?? `HTTP error ${response.status}`
-            );
-
+            const error = new Error(body?.detail ?? `HTTP error ${response.status}`);
             error.status = response.status;
             error.body = body;
-
             throw error;
         }
 
@@ -30,13 +21,9 @@ window.api = {
             return null;
         }
 
-        const contentType =
-            response.headers.get("content-type") ?? "";
-
-        if (contentType.includes("application/json")) {
-            return response.json();
-        }
-
-        return response.text();
+        const contentType = response.headers.get("content-type") ?? "";
+        return contentType.includes("application/json")
+            ? response.json()
+            : response.text();
     }
 };

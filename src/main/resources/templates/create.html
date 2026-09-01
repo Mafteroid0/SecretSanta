@@ -1,54 +1,42 @@
 <!DOCTYPE html>
-<html data-bs-theme="light" lang="en">
-
+<html data-bs-theme="dark" lang="ru">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Untitled</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Новая игра — Secret Santa</title>
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800&amp;display=swap">
+    <link rel="stylesheet" href="/assets/css/app.css">
 </head>
-
 <body>
-    <nav class="navbar navbar-expand-md sticky-top py-3 navbar-dark" id="mainNav">
-        <div class="container"><a class="navbar-brand d-flex align-items-center" href="/"><span class="bs-icon-sm bs-icon-circle bs-icon-primary shadow d-flex justify-content-center align-items-center me-2 bs-icon"></span><span>Secret santa</span></a><button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
-            <div class="collapse navbar-collapse" id="navcol-1">
-                <ul class="navbar-nav mx-auto">
-                    <li class="nav-item"><a class="nav-link" href="/home">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/games">Games</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/profile">Profile</a></li>
-                    <li class="nav-item"></li>
-                    <li class="nav-item"></li>
-                </ul><a class="btn btn-primary text-bg-danger shadow" role="button" href="/logout">Log out</a>
-            </div>
-        </div>
-    </nav>
-    <div class="row mb-4 mb-lg-5">
-        <div class="col-md-8 col-xl-6 text-center mx-auto">
-            <h2 class="fw-bold">Create new game</h2>
+<nav class="app-nav">
+    <div class="container app-nav-inner">
+        <a class="brand" href="/games"><span class="brand-mark">S</span>Secret Santa</a>
+        <div class="nav-links">
+            <a class="nav-link active" href="/games">Игры</a>
+            <a class="nav-link" href="/profile">Профиль</a>
+            <a class="nav-link" href="/logout">Выйти</a>
         </div>
     </div>
-    <div class="row d-flex justify-content-center">
-        <div class="col-md-6 col-xl-4">
-            <div class="card">
-                <div class="card-body text-center d-flex flex-column align-items-center">
-                    <div class="bs-icon-xl bs-icon-circle bs-icon-primary shadow bs-icon my-4"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-plus-circle-dotted" style="font-size: 48px;">
-                            <path d="M8 0c-.176 0-.35.006-.523.017l.064.998a7.117 7.117 0 0 1 .918 0l.064-.998A8.113 8.113 0 0 0 8 0M6.44.152c-.346.069-.684.16-1.012.27l.321.948c.287-.098.582-.177.884-.237L6.44.153zm4.132.271a7.946 7.946 0 0 0-1.011-.27l-.194.98c.302.06.597.14.884.237l.321-.947zm1.873.925a8 8 0 0 0-.906-.524l-.443.896c.275.136.54.29.793.459l.556-.831zM4.46.824c-.314.155-.616.33-.905.524l.556.83a7.07 7.07 0 0 1 .793-.458zM2.725 1.985c-.262.23-.51.478-.74.74l.752.66c.202-.23.418-.446.648-.648l-.66-.752zm11.29.74a8.058 8.058 0 0 0-.74-.74l-.66.752c.23.202.447.418.648.648l.752-.66m1.161 1.735a7.98 7.98 0 0 0-.524-.905l-.83.556c.169.253.322.518.458.793l.896-.443zM1.348 3.555c-.194.289-.37.591-.524.906l.896.443c.136-.275.29-.54.459-.793l-.831-.556zM.423 5.428a7.945 7.945 0 0 0-.27 1.011l.98.194c.06-.302.14-.597.237-.884l-.947-.321zM15.848 6.44a7.943 7.943 0 0 0-.27-1.012l-.948.321c.098.287.177.582.237.884l.98-.194zM.017 7.477a8.113 8.113 0 0 0 0 1.046l.998-.064a7.117 7.117 0 0 1 0-.918l-.998-.064zM16 8a8.1 8.1 0 0 0-.017-.523l-.998.064a7.11 7.11 0 0 1 0 .918l.998.064A8.1 8.1 0 0 0 16 8M.152 9.56c.069.346.16.684.27 1.012l.948-.321a6.944 6.944 0 0 1-.237-.884l-.98.194zm15.425 1.012c.112-.328.202-.666.27-1.011l-.98-.194c-.06.302-.14.597-.237.884l.947.321zM.824 11.54a8 8 0 0 0 .524.905l.83-.556a6.999 6.999 0 0 1-.458-.793l-.896.443zm13.828.905c.194-.289.37-.591.524-.906l-.896-.443c-.136.275-.29.54-.459.793l.831.556zm-12.667.83c.23.262.478.51.74.74l.66-.752a7.047 7.047 0 0 1-.648-.648l-.752.66zm11.29.74c.262-.23.51-.478.74-.74l-.752-.66c-.201.23-.418.447-.648.648l.66.752m-1.735 1.161c.314-.155.616-.33.905-.524l-.556-.83a7.07 7.07 0 0 1-.793.458l.443.896zm-7.985-.524c.289.194.591.37.906.524l.443-.896a6.998 6.998 0 0 1-.793-.459l-.556.831zm1.873.925c.328.112.666.202 1.011.27l.194-.98a6.953 6.953 0 0 1-.884-.237l-.321.947zm4.132.271a7.944 7.944 0 0 0 1.012-.27l-.321-.948a6.954 6.954 0 0 1-.884.237l.194.98zm-2.083.135a8.1 8.1 0 0 0 1.046 0l-.064-.998a7.11 7.11 0 0 1-.918 0l-.064.998zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z"></path>
-                        </svg></div>
-                    <form id="createEventForm">
-                        <div class="mb-3"><input class="form-control" type="text" id="eventName" name="name" placeholder="Name"></div><input class="form-control" id="eventDeadline" type="datetime-local" name="deadline">
-                        <div class="mb-3"></div>
-                        <div id="createEventError"></div>
-                        <div class="mb-3"><button class="btn btn-primary shadow d-block w-100" type="submit">Create event</button></div>
-                    </form>
-                </div>
+</nav>
+<main class="page page-narrow">
+    <section class="panel">
+        <h1 class="h2">Новая игра</h1>
+        <p class="muted">Укажите название и срок подготовки подарков.</p>
+        <form class="form-stack" id="createEventForm">
+            <div class="field">
+                <label for="eventName">Название</label>
+                <input class="form-control" id="eventName" name="name" type="text" maxlength="200" required>
             </div>
-        </div>
-    </div>
-    <script src="/assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="/assets/js/api.js"></script>
-    <script src="/assets/js/bold-and-dark.js"></script>
-    <script src="/assets/js/create-event.js"></script>
+            <div class="field">
+                <label for="eventDeadline">Дедлайн</label>
+                <input class="form-control" id="eventDeadline" name="deadline" type="datetime-local" required>
+            </div>
+            <div class="error" id="createEventError" aria-live="polite"></div>
+            <button class="btn btn-primary full-width" type="submit">Создать игру</button>
+        </form>
+    </section>
+</main>
+<script src="/assets/js/api.js"></script>
+<script src="/assets/js/create-event.js"></script>
 </body>
-
 </html>

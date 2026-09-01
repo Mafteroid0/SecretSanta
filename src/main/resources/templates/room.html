@@ -1,194 +1,48 @@
 <!DOCTYPE html>
-<html data-bs-theme="light" lang="en">
-
+<html data-bs-theme="dark" lang="ru">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Secret Santa</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Комната — Secret Santa</title>
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css">
-
-    <link rel="stylesheet"
-          href="https://fonts.googleapis.com/css?family=Inter:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800&amp;display=swap">
+    <link rel="stylesheet" href="/assets/css/app.css">
 </head>
-
 <body>
-
-<nav class="navbar navbar-expand-md sticky-top py-3 navbar-dark"
-     id="mainNav">
-
-    <div class="container">
-
-        <a class="navbar-brand d-flex align-items-center"
-           href="/">
-
-            <span class="bs-icon-sm bs-icon-circle bs-icon-primary shadow d-flex justify-content-center align-items-center me-2 bs-icon"></span>
-
-            <span>
-                <strong>Secret santa</strong>
-            </span>
-
-        </a>
-
-
-        <button
-                data-bs-toggle="collapse"
-                class="navbar-toggler"
-                data-bs-target="#navcol-1">
-
-            <span class="visually-hidden">
-                Toggle navigation
-            </span>
-
-            <span class="navbar-toggler-icon"></span>
-
-        </button>
-
-
-        <div class="collapse navbar-collapse"
-             id="navcol-1">
-
-            <ul class="navbar-nav mx-auto">
-
-                <li class="nav-item">
-                    <a class="nav-link"
-                       href="/home">
-                        Home
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link"
-                       href="/games">
-                        Games
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link"
-                       href="/profile">
-                        Profile
-                    </a>
-                </li>
-
-            </ul>
-
-
-            <a class="btn btn-primary text-bg-danger shadow"
-               role="button"
-               href="/logout">
-
-                Log out
-
-            </a>
-
+<nav class="app-nav">
+    <div class="container app-nav-inner">
+        <a class="brand" href="/games"><span class="brand-mark">S</span>Secret Santa</a>
+        <div class="nav-links">
+            <a class="nav-link active" href="/games">Игры</a>
+            <a class="nav-link" href="/profile">Профиль</a>
+            <a class="nav-link" href="/logout">Выйти</a>
         </div>
-
     </div>
-
 </nav>
-
-
-<div class="row">
-
-    <div class="col"
-         style="width: 1226px;min-height: 100vh;margin: 67px;border-width: 43px;border-color: rgb(73,72,91);">
-
-        <hr>
-
-
-        <h1 id="roomName"></h1>
-
-
-        <div id="waitingForStart"></div>
-
-
-        <div id="assignmentCard"
-             class="card d-none">
-
-            <div class="card-body">
-
-                <h1 class="card-title">
-
-                    Вы дарите подарок:&nbsp;
-
-                    <a id="giftedUserLink"
-                       href="#">
-
-                        <span id="giftedUserName"></span>
-
-                    </a>
-
-                </h1>
-
+<main class="container page">
+    <div class="room-grid">
+        <section class="panel">
+            <p class="eyebrow" id="roomStatus"></p>
+            <h1 class="h2" id="roomName">Загрузка…</h1>
+            <p class="muted">Дедлайн: <span id="roomDeadline">—</span></p>
+            <div id="waitingForStart" class="muted">Ожидаем запуска жеребьёвки.</div>
+            <div id="assignmentCard" class="panel assignment hidden">
+                Вы дарите подарок: <strong><a id="giftedUserLink" href="#"><span id="giftedUserName"></span></a></strong>
             </div>
-
-        </div>
-
-
-        <p id="roomDeadline"></p>
-
-
-        <p id="roomStatus"></p>
-
-
-        <div id="roomError"></div>
-
-
-        <div id="participantsList"></div>
-
+            <div class="error mt-3" id="roomError" aria-live="polite"></div>
+            <h2 class="h5 mt-4">Участники</h2>
+            <div class="participants-list" id="participantsList"></div>
+        </section>
+        <aside class="panel">
+            <h2 class="h5">Управление</h2>
+            <div class="form-stack mt-3">
+                <button class="btn btn-ghost full-width" id="copyInviteButton" type="button">Скопировать приглашение</button>
+                <button class="btn btn-primary full-width hidden" id="startGameButton" type="button">Начать игру</button>
+                <button class="btn btn-danger-soft full-width hidden" id="gameActionButton" type="button"></button>
+            </div>
+        </aside>
     </div>
-
-
-    <div class="col"
-         style="margin-left: 4px;padding-left: 8px;">
-
-
-        <button
-                class="btn btn-outline-primary text-center"
-                id="copyInviteButton"
-                type="button"
-                style="margin-right: 1px;margin-left: 23px;">
-
-            Copy invite
-
-        </button>
-
-
-        <button
-                class="btn btn-primary text-center d-none"
-                id="startGameButton"
-                type="button"
-                style="margin-right: 1px;margin-left: 23px;">
-
-            Start game
-
-        </button>
-
-
-        <button
-                class="btn btn-danger text-center d-none"
-                id="gameActionButton"
-                type="button"
-                style="margin-right: 1px;margin-left: 23px;">
-
-        </button>
-
-    </div>
-
-</div>
-
-
-<div class="games-list">
-    <div th:each="event : ${events}"></div>
-</div>
-
-
-<script src="/assets/bootstrap/js/bootstrap.min.js"></script>
+</main>
 <script src="/assets/js/api.js"></script>
-<script src="/assets/js/bold-and-dark.js"></script>
 <script src="/assets/js/room.js"></script>
-
 </body>
-
 </html>
