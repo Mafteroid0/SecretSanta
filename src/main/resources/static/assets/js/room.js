@@ -12,8 +12,25 @@
     const giftedUserLink = document.getElementById("giftedUserLink");
     const waiting = document.getElementById("waitingForStart");
     const eventId = window.location.pathname.split("/").filter(Boolean).at(-1);
+    const defaultAvatar = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='50' fill='%23343a40'/%3E%3Ccircle cx='50' cy='36' r='18' fill='%23adb5bd'/%3E%3Cpath d='M18 92c2-24 16-38 32-38s30 14 32 38' fill='%23adb5bd'/%3E%3C/svg%3E";
     let currentEvent;
     let currentUser;
+
+    function setAvatar(image, userId) {
+        image.onerror = () => {
+            image.onerror = null;
+            image.src = defaultAvatar;
+        };
+        image.src = `/api/v1/users/${encodeURIComponent(userId)}/avatar`;
+    }
+
+    function createAvatar(userId, size = 40) {
+        const image = document.createElement("img");
+        image.alt = "";
+        image.style.cssText = `width:${size}px;height:${size}px;object-fit:cover;border-radius:50%;flex-shrink:0;`;
+        setAvatar(image, userId);
+        return image;
+    }
 
     function renderEvent(event) {
         roomName.textContent = event.name;
@@ -23,6 +40,7 @@
 
     function renderParticipants(participants) {
         participantsList.replaceChildren();
+
         if (!participants.length) {
             participantsList.textContent = "Участников пока нет.";
             participantsList.classList.add("muted");
@@ -30,13 +48,19 @@
         }
 
         participantsList.classList.remove("muted");
+
         for (const participant of participants) {
             const row = document.createElement("div");
             const link = document.createElement("a");
+            const avatar = createAvatar(participant.userId);
+
             row.className = "participant";
+            row.style.cssText = "display:flex;align-items:center;gap:10px;";
+
             link.href = `/profile/${encodeURIComponent(participant.username)}`;
             link.textContent = participant.displayName;
-            row.append(link);
+
+            row.append(avatar, link);
 
             if (participant.owner) {
                 const badge = document.createElement("span");
@@ -44,6 +68,7 @@
                 badge.textContent = "Организатор";
                 row.append(badge);
             }
+
             participantsList.append(row);
         }
     }
@@ -62,10 +87,21 @@
     }
 
     async function loadAssignment() {
-        const assignment = await api.request(`/api/v1/events/${encodeURIComponent(eventId)}/participants/me/assignment`);
+        const assignment = await api.request(
+            `/api/v1/events/${encodeURIComponent(eventId)}/participants/me/assignment`
+        );
+
         waiting.classList.add("hidden");
         giftedUserName.textContent = assignment.displayName;
         giftedUserLink.href = `/profile/${encodeURIComponent(assignment.username)}`;
+
+        assignmentCard.querySelector(".assignment-avatar")?.remove();
+
+        const avatar = createAvatar(assignment.userId, 48);
+        avatar.classList.add("assignment-avatar");
+        avatar.style.marginRight = "12px";
+        assignmentCard.prepend(avatar);
+
         assignmentCard.classList.remove("hidden");
     }
 
@@ -76,11 +112,14 @@
                 api.request("/api/v1/users/me"),
                 api.request(`/api/v1/events/${encodeURIComponent(eventId)}/participants`)
             ]);
+
             currentEvent = event;
             currentUser = user;
+
             renderEvent(event);
             renderParticipants(participants);
             renderControls(event, user);
+
             event.started ? await loadAssignment() : showWaiting();
         } catch (error) {
             roomError.textContent = error.message ?? "Не удалось загрузить игру.";
@@ -89,6 +128,7 @@
 
     copyButton?.addEventListener("click", async () => {
         const inviteLink = `${window.location.origin}/join/${encodeURIComponent(eventId)}`;
+
         try {
             await navigator.clipboard.writeText(inviteLink);
             const previousText = copyButton.textContent;
@@ -102,8 +142,13 @@
     startButton?.addEventListener("click", async () => {
         startButton.disabled = true;
         roomError.textContent = "";
+
         try {
-            currentEvent = await api.request(`/api/v1/events/${encodeURIComponent(eventId)}/start`, {method: "POST"});
+            currentEvent = await api.request(
+                `/api/v1/events/${encodeURIComponent(eventId)}/start`,
+                {method: "POST"}
+            );
+
             renderEvent(currentEvent);
             renderControls(currentEvent, currentUser);
             await loadAssignment();
@@ -115,23 +160,22 @@
 
     actionButton?.addEventListener("click", async () => {
         const action = actionButton.dataset.action;
-        if (!action) {
-            return;
-        }
+        if (!action) return;
 
         const message = action === "delete"
             ? "Вы уверены, что хотите удалить игру?"
             : "Вы уверены, что хотите выйти из игры?";
-        if (!window.confirm(message)) {
-            return;
-        }
+
+        if (!window.confirm(message)) return;
 
         actionButton.disabled = true;
         roomError.textContent = "";
+
         try {
             const url = action === "leave"
                 ? `/api/v1/events/${encodeURIComponent(eventId)}/participants/me`
                 : `/api/v1/events/${encodeURIComponent(eventId)}`;
+
             await api.request(url, {method: "DELETE"});
             window.location.href = "/games";
         } catch (error) {

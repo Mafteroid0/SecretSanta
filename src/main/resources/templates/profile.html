@@ -22,8 +22,29 @@
     <div class="profile-grid">
         <section class="panel">
             <p class="eyebrow">Профиль</p>
+
+            <img
+                    id="profileAvatar"
+                    th:attr="data-user-id=${user.id}"
+                    alt="Аватар"
+                    style="width:120px;height:120px;object-fit:cover;border-radius:50%;display:block;margin-bottom:16px">
+
+            <input
+                    id="avatarInput"
+                    type="file"
+                    accept="image/jpeg,image/png"
+                    hidden>
+
+            <button
+                    class="btn btn-ghost hidden mb-3"
+                    id="changeAvatarButton"
+                    type="button">
+                Изменить аватар
+            </button>
+
             <h1 class="h3" th:text="${user.username}">Пользователь</h1>
             <h2 id="profileDisplayName" th:text="${user.displayName}">Иван Иванов</h2>
+
             <form class="form-stack mt-4 hidden" id="profileEditForm">
                 <div class="field">
                     <label for="displayNameInput">Изменить отображаемое имя</label>
@@ -33,6 +54,7 @@
                 <button class="btn btn-primary full-width" type="submit">Сохранить</button>
             </form>
         </section>
+
         <section class="panel">
             <div class="page-heading">
                 <div>
@@ -44,44 +66,67 @@
                     <button class="btn btn-primary hidden" id="addWishButton" type="button" data-dialog-open="addWishlistItemModal">Добавить</button>
                 </div>
             </div>
+
             <div id="wishlistNotice"></div>
             <div class="wishlist-list" id="wishlist" aria-live="polite"></div>
         </section>
     </div>
 </main>
+
 <dialog class="app-dialog" id="addWishlistItemModal">
     <form class="dialog-body" id="addWishlistItemForm">
         <div class="dialog-heading">
             <h2>Новое желание</h2>
             <button class="btn btn-ghost" type="button" data-dialog-close>Закрыть</button>
         </div>
+
         <div class="field">
             <label for="wishlistItemName">Название</label>
             <input class="form-control" id="wishlistItemName" type="text" maxlength="200" required>
         </div>
+
         <div class="field">
             <label for="wishlistItemDescription">Описание</label>
             <textarea class="form-control" id="wishlistItemDescription" maxlength="2000"></textarea>
         </div>
+
+        <div class="field">
+            <label for="wishlistItemImage">Изображение</label>
+            <input
+                    class="form-control"
+                    id="wishlistItemImage"
+                    type="file"
+                    accept="image/jpeg,image/png">
+        </div>
+
         <div class="error" id="wishlistError" aria-live="polite"></div>
-        <div class="dialog-actions"><button class="btn btn-primary" type="submit">Добавить</button></div>
+        <div class="dialog-actions">
+            <button class="btn btn-primary" type="submit">Добавить</button>
+        </div>
     </form>
 </dialog>
+
 <dialog class="app-dialog" id="importWishlistModal">
     <form class="dialog-body" id="importWishlistForm">
         <div class="dialog-heading">
             <h2>Импорт вишлиста</h2>
             <button class="btn btn-ghost" type="button" data-dialog-close>Закрыть</button>
         </div>
+
         <div class="field">
             <label for="importWishlistUrl">Публичная ссылка</label>
             <input class="form-control" id="importWishlistUrl" type="url" autocomplete="url" required>
             <span class="form-hint">Вставьте ссылку с поддерживаемого сервиса.</span>
         </div>
+
         <div class="error" id="importWishlistError" aria-live="polite"></div>
-        <div class="dialog-actions"><button class="btn btn-primary" id="importWishlistSubmit" type="submit">Импортировать</button></div>
+
+        <div class="dialog-actions">
+            <button class="btn btn-primary" id="importWishlistSubmit" type="submit">Импортировать</button>
+        </div>
     </form>
 </dialog>
+
 <script src="/assets/js/api.js"></script>
 <script src="/assets/js/profile.js"></script>
 </body>
