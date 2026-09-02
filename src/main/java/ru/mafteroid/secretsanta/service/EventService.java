@@ -124,6 +124,15 @@ public class EventService {
         return toResponse(event);
     }
 
+    private void startEvent(Event event) {
+        List<EventParticipant> participants =
+                eventParticipantRepository.findByEvent_Id(event.getId());
+
+        assignmentGenerator.assign(participants);
+
+        event.start();
+    }
+
     @Transactional
     public EventResponse start(UUID eventId, String username) {
         User user = userRepository.findByUsernameIgnoreCase(username)
@@ -132,10 +141,24 @@ public class EventService {
                 .orElseThrow(() -> new ResourceNotFoundException("No such event"));
         requireOwner(event, user);
 
-        assignmentGenerator.assign(eventParticipantRepository.findByEvent_Id(eventId));
-        event.start();
+        startEvent(event);
         return toResponse(event);
 
+    }
+
+    @Transactional
+    public void startExpiredEvents(){
+        List<Event> events = eventRepository.findAllByStartedFalseAndDeadlineBefore(Instant.now());
+        for (Event event : events) {
+            List<EventParticipant> participants =
+                    eventParticipantRepository
+                            .findByEvent_Id(event.getId());
+
+            if (participants.size() < 2) {
+                continue;
+            }
+            startEvent(event);
+        }
     }
 
     @Transactional
