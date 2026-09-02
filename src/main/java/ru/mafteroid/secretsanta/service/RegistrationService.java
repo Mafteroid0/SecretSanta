@@ -25,9 +25,7 @@ public class RegistrationService {
         String encodedPassword = passwordEncoder.encode(form.password());
 
         User user = new User(form.username(), form.displayName(), encodedPassword);
-        System.out.println("USER SAVING");
         userRepository.save(user);
-        System.out.println("USER SAVED");
 
     }
 

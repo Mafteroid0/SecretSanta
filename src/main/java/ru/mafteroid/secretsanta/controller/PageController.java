@@ -19,14 +19,10 @@ import java.util.UUID;
 
 @Controller
 public class PageController {
-    private final EventService eventService;
     private final UserService userService;
-    private final EventParticipantRepository eventParticipantRepository;
 
-    public PageController(EventService eventService, UserService userService, EventParticipantRepository eventParticipantRepository) {
-        this.eventService = eventService;
+    public PageController(UserService userService) {
         this.userService = userService;
-        this.eventParticipantRepository = eventParticipantRepository;
     }
 
     @GetMapping("/")
@@ -59,9 +55,6 @@ public class PageController {
 
     @GetMapping("/games")
     public String games() {
-//        String username = authentication.getName();
-//        List<Event> events = eventService.findEventsByUsername(username);
-//        model.addAttribute("events", events);
         return "games";
     }
 
@@ -72,10 +65,6 @@ public class PageController {
 
     @GetMapping("/room/{eventId}")
     public String room(@PathVariable UUID eventId) {
-//        Event event = eventService.findEventById(UUID.fromString(eventId));
-//        model.addAttribute("event", event);
-//        List<User> users = userService.findUsersByEventId(event.getId());
-//        model.addAttribute("users", users);
         return "room";
 
     }
