@@ -136,7 +136,6 @@
             if (profileDisplayName) profileDisplayName.textContent = user.displayName;
             if (displayNameInput) displayNameInput.value = user.displayName;
 
-            showNotice("Имя профиля обновлено.");
         } catch (error) {
             if (editError) editError.textContent = error.message;
             else showNotice(error.message, "danger");
@@ -159,7 +158,6 @@
 
             addForm.reset();
             document.getElementById("addWishlistItemModal").close();
-            showNotice("Желание добавлено.");
             await loadWishlist();
         } catch (error) {
             addError.textContent = error.message;

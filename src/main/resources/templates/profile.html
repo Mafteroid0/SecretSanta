@@ -26,8 +26,8 @@
             <h2 id="profileDisplayName" th:text="${user.displayName}">Иван Иванов</h2>
             <form class="form-stack mt-4 hidden" id="profileEditForm">
                 <div class="field">
-                    <label for="displayNameInput">Имя</label>
-                    <input class="form-control" id="displayNameInput" name="displayName" type="text" placeholder="Имя" maxlength="100" required>
+                    <label for="displayNameInput">Изменить отображаемое имя</label>
+                    <input class="form-control" id="displayNameInput" name="displayName" type="text" th:value="${user.displayName != null ? user.displayName : 'Имя'}" maxlength="100" required>
                     <div id="profileEditError"></div>
                 </div>
                 <button class="btn btn-primary full-width" type="submit">Сохранить</button>
