@@ -4,9 +4,9 @@ app:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/secret_santa
-    username: secret_santa_user
-    password: secret
+    url: ${DB_URL:jdbc:postgresql://localhost:5433/secret_santa}
+    username: ${DB_USERNAME:secret_santa_user}
+    password: ${DB_PASSWORD:secret}
 
   flyway:
     enabled: true

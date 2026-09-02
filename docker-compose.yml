@@ -2,9 +2,9 @@ services:
   postgres:
     image: postgres:17
     environment:
-      POSTGRES_DB: secret_santa
-      POSTGRES_USER: secret_santa_user
-      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: ${POSTGRES_DB:-secret_santa}
+      POSTGRES_USER: ${POSTGRES_USER:-secret_santa_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secret}
     ports:
       - "5433:5432"
 
