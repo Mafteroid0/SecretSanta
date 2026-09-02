@@ -69,6 +69,10 @@ public class WishListApiController {
             @PathVariable UUID itemId,
             Authentication authentication
     ) {
+        wishListImageService.delete(
+                authentication.getName(),
+                itemId
+        );
         wishlistService.delete(
                 authentication.getName(),
                 itemId
