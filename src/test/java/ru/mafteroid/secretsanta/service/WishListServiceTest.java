@@ -73,7 +73,10 @@ class WishListServiceTest {
 
     private WishListItem itemOwnedBy(UUID userId) {
         WishListItem item = mock(WishListItem.class);
-        when(item.getUser()).thenReturn(userWithId(userId));
+        User owner = userWithId(userId);
+
+        when(item.getUser()).thenReturn(owner);
+
         return item;
     }
 }
